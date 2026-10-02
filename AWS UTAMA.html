@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS EcoSkola — Interactive Cyber Station</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Google -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <!-- Chart.js & Anime.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  
+  <style>
+html {
+  scroll-behavior: smooth;
+}
+
+/* Supaya saat di-scroll, judul tidak tertutup oleh navbar fixed */
+#dashboard, #grafik-monitoring, #info-sensor {
+  scroll-margin-top: 100px;
+}
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #030712;
+      overflow-x: hidden;
+    }
+
+    /* Background Particle Canvas */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* 3D Dynamic Card Glassmorphism */
+    .glass-card {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+      will-change: transform;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+    }
+
+    /* CINEMATIC OPENING OVERLAY & LOADING CANVAS */
+    #cinematic-intro {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #0b1528 0%, #030712 100%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1), visibility 1s;
+    }
+
+    /* Cinematic Letterbox Bars (Top & Bottom Movie Bars) */
+    .movie-bar {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 12vh;
+      background: #000000;
+      z-index: 110;
+      transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    .movie-bar-top { top: 0; transform: translateY(0); }
+    .movie-bar-bottom { bottom: 0; transform: translateY(0); }
+
+    .cinematic-active .movie-bar-top { transform: translateY(-100%); }
+    .cinematic-active .movie-bar-bottom { transform: translateY(100%); }
+
+    /* Cloud & Rain Animation for Loading Screen */
+@keyframes rainDrop {
+  0% { transform: translateY(0) scaleY(1); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(35px) scaleY(1.3); opacity: 0; }
+}
+
+.rain-drop {
+  animation: rainDrop 1s linear infinite;
+}
+
+    /* Ambient Glow & Floating FX for Mascot */
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(1.5deg); }
+    }
+
+    .mascot-float {
+      animation: mascotFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes energyPulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.95); }
+      50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    .energy-glow {
+      animation: energyPulse 3s ease-in-out infinite;
+    }
+
+/* ANIMASI MASKOT DASHBOARD      */
+.dashboard-mascot-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cahaya di belakang maskot */
+.dashboard-glow {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  background: rgba(34, 211, 238, 0.25);
+  border-radius: 50%;
+  filter: blur(35px);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* Gerakan maskot */
+.dashboard-mascot-animation {
+  position: relative;
+  z-index: 2;
+  width: 200px;
+  animation: mascotDashboard 3s ease-in-out infinite;
+}
+
+/* Maskot naik-turun */
+@keyframes mascotDashboard {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
+}
+
+/* Cahaya berdenyut */
+@keyframes glowPulse {
+  0%, 100% {
+    transform: scale(0.85);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+}
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen p-4 md:p-8 flex flex-col justify-between relative">
+
+  <!-- CINEMATIC OPENING OVERLAY LAYER -->
+  <div id="cinematic-intro">
+
+    <!-- Background Atmospheric Particles -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/30 via-slate-950/80 to-black pointer-events-none"></div>
+
+    <!-- Center Stage Container -->
+    <div class="relative z-120 flex flex-col items-center text-center p-6 max-w-xl">
+      
+      <!-- Energy Aura Glow Behind Mascot -->
+      <div id="intro-glow" class="energy-glow absolute w-72 h-72 md:w-96 md:h-96 bg-cyan-500/30 rounded-full blur-3xl opacity-0"></div>
+
+      <!-- Mascot Image with Initial Hidden Transform Scale for Intro Effect -->
+      <div id="intro-mascot-wrapper" class="relative z-10 w-52 md:w-64 opacity-0 scale-50 transform mb-4">
+        <img 
+  id="intro-mascot-img" 
+  src="<a href="https://ibb.co.com/BVxtQhMC"><img src="https://i.ibb.co.com/TBSk7Q3g/Chat-GPT-Image-23-Sep-2026-21-19-26.png" alt="Chat-GPT-Image-23-Sep-2026-21-19-26" border="0"></a>
+</div>
+
+      <!-- Cinematic Title Reveal -->
+      <div id="intro-title" class="opacity-0 translate-y-6 transform">
+        <span class="text-cyan-400 text-xs font-bold tracking-[0.3em] uppercase block mb-1">Interactive Cyber Station</span>
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-300 via-sky-200 to-blue-500 bg-clip-text text-transparent mb-2">
+          AWS EcoSkola
+        </h1>
+        <p class="text-slate-400 text-xs md:text-sm font-medium">SMA Darul Ulum 1 Unggulan BPPT</p>
+      </div>
+
+      <!-- CLOUD & RAIN LOADING SCREEN COMPONENT -->
+<div id="loading-box" class="mt-8 flex flex-col items-center gap-3 transition-opacity duration-500">
+  <!-- SVG Animated Cloud with Rain Drops -->
+  <div class="relative w-24 h-16 flex justify-center items-center">
+    <svg class="w-full h-full text-cyan-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Cloud Shape -->
+      <path d="M 20 40 
+               C 10 40, 5 30, 15 20 
+               C 20 10, 40 5, 55 15 
+               C 65 5, 85 10, 85 25 
+               C 95 30, 90 40, 80 40 Z" 
+            fill="rgba(15, 23, 42, 0.8)" 
+            stroke="#38bdf8" 
+            stroke-width="2.5" />
+    </svg>
+    <!-- Rain Drops -->
+    <div class="absolute bottom-1 flex justify-around w-12 px-1">
+      <span class="rain-drop w-1 h-3 bg-cyan-400 rounded-full" style="animation-delay: 0s;"></span>
+      <span class="rain-drop w-1 h-3 bg-sky-300 rounded-full" style="animation-delay: 0.3s;"></span>
+      <span class="rain-drop w-1 h-3 bg-blue-400 rounded-full" style="animation-delay: 0.6s;"></span>
+      <span class="rain-drop w-1 h-3 bg-cyan-300 rounded-full" style="animation-delay: 0.2s;"></span>
+    </div>
+  </div>
+  <span id="loading-text" class="text-sm font-bold text-cyan-300 tracking-wider animate-pulse"> 0%</span>
+</div>
+
+      <!-- Replay Intro Button dihapus  (Optional Control) -->
+
+    </div>
+  </div>
+
+  <!-- Background Particle Interactive Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="relative z-10 max-w-5xl mx-auto w-full">
+
+<!-- HEADER UTAMA -->
+<header class="flex flex-wrap items-center justify-between gap-4 py-4 px-6 bg-slate-900/80 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md mb-8">
+  
+  <!-- KIRI: LOGO AWAN & DENGAN MENU NAVIGASI (DISAMPING AWSECOSKOLA) -->
+  <div class="flex items-center gap-6">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
+        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h10a5 5 0 001-9.9 5 5 0 00-9.2-3.1 3 3 0 00-5.8 2.1 4 4 0 00-1 6.9z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold text-white tracking-wide">AWS EcoSkola</h1>
+        <p class="text-xs text-slate-400">Interactive Weather Station V2.0</p>
+      </div>
+    </div>
+
+    <!-- MENU NAVIGASI -->
+    <nav class="hidden md:flex items-center gap-1 bg-slate-800/60 p-1.5 rounded-xl border border-slate-700/50 text-sm font-medium">
+  <a href="#dashboard" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Dashboard</a>
+  
+  <!-- Mengarahkan ke Grafik / Tabel Monitoring -->
+  <a href="#grafik-monitoring" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Tabel Data</a>
+  
+  <!-- Mengarahkan ke Penjelasan Sensor -->
+  <a href="#info-sensor" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Info Sensor</a>
+</nav>
+
+  <!-- KANAN: TOMBOL ASLI -->
+  <div class="flex items-center gap-3 relative z-50" style="margin-left: 150px;">
+  <!-- Tombol Sync Data yang Bisa Diklik -->
+  <button 
+    type="button"
+    onclick="syncDataAnimasi(this)" 
+    class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-semibold text-slate-300 border border-slate-700 hover:border-cyan-400/50 flex items-center gap-2 cursor-pointer transition-all duration-200 shadow-md">
+    <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> 
+    <span>Sync Data</span>
+  </button>
+
+  <!-- Status ESP32 LIVE -->
+  <div class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 
+    <span>ESP32 LIVE</span>
+  </div>
+</div>
+
+<script>
+  function syncDataAnimasi(button) {
+    // Memberikan efek animasi putar/loading pada tombol saat diklik
+    const originalContent = button.innerHTML;
+    button.innerHTML = `
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+      <span class="text-cyan-400">Syncing...</span>
+    `;
+    button.classList.add('opacity-75');
+
+    // Mengembalikan ke tampilan semula setelah 1.5 detik
+    setTimeout(() => {
+      button.innerHTML = originalContent;
+      button.classList.remove('opacity-75');
+      alert('Data berhasil diperbarui!');
+    }, 1000);
+  }
+</script>
+</header>
+
+
+<!-- KARTU HERO / PANTAU CUACA SEKOLAH (TARGET #dashboard) -->
+<div id="dashboard" class="bg-slate-900/80 rounded-3xl p-6 border border-slate-800 backdrop-blur-md relative overflow-hidden mb-8">
+
+  <div class="flex flex-col md:flex-row items-center gap-6">
+
+    <!-- MASKOT ANIMASI -->
+    <div class="dashboard-mascot-container">
+
+      <div class="dashboard-glow"></div>
+
+      <img 
+        id="dashboard-mascot"
+        class="dashboard-mascot-animation"
+        src="https://i.ibb.co.com/fddmWtSh/mascot-1.png"
+        alt="Maskot AWS EcoSkola">
+
+    </div>
+    <!-- TEKS KARTU -->
+    <div>
+      <span class="inline-block px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-xs font-semibold mb-3">
+        👋 Halo, Selamat Datang!
+      </span>
+      <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">
+        Pantau Cuaca Sekolah Secara <span class="text-cyan-400">Real-Time & Presisi</span>
+      </h2>
+      <p class="text-slate-400 text-sm leading-relaxed">
+        Aku adalah maskot AWS EcoSkola! Di sini kamu bisa memantau kondisi suhu, kelembapan, intensitas cahaya, hingga indeks kualitas udara di lingkungan sekolah secara langsung dari sensor ESP32.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+    <!-- Metric Cards Grid dengan Interaksi Hover & Animated Counter -->
+    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      
+      <!-- Suhu -->
+      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+        <div class="flex justify-between items-start">
+          <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Suhu Udara</span>
+          <span class="text-2xl animate-bounce">🌡️</span>
+        </div>
+        <div class="my-4">
+          <div class="text-5xl font-extrabold tracking-tight text-cyan-400">
+            <span id="temp" class="metric-val">0.0</span><span class="text-2xl text-slate-400">°C</span>
+          </div>
+        </div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+          <div id="temp-bar" class="bg-gradient-to-r from-cyan-500 to-sky-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Kelembapan -->
+      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+        <div class="flex justify-between items-start">
+          <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kelembapan</span>
+          <span class="text-2xl animate-pulse">💧</span>
+        </div>
+        <div class="my-4">
+          <div class="text-5xl font-extrabold tracking-tight text-blue-400">
+            <span id="hum" class="metric-val">0.0</span><span class="text-2xl text-slate-400">%</span>
+          </div>
+        </div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+          <div id="hum-bar" class="bg-gradient-to-r from-blue-500 to-indigo-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Cahaya -->
+      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+        <div class="flex justify-between items-start">
+          <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Intensitas LDR</span>
+          <span class="text-2xl">☀️</span>
+        </div>
+        <div class="my-4">
+          <div class="text-5xl font-extrabold tracking-tight text-amber-400">
+            <span id="light" class="metric-val">0</span><span class="text-2xl text-slate-400"> lx</span>
+          </div>
+        </div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+          <div id="light-bar" class="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Air Quality -->
+      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+        <div class="flex justify-between items-start">
+          <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Indeks Udara</span>
+          <span class="text-2xl">🍃</span>
+        </div>
+        <div class="my-4">
+          <div class="text-5xl font-extrabold tracking-tight text-emerald-400">
+            <span id="aqi" class="metric-val">0</span>
+          </div>
+          <p id="aqi-status" class="text-xs text-emerald-400 font-semibold mt-1">Status: Memuat...</p>
+        </div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+          <div id="aqi-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- INTERACTIVE LINE CHART SECTION (SUDAH DIBUNGKUS KOTAK) -->
+<section id="grafik-monitoring" class="bg-slate-900/80 backdrop-blur-md rounded-2xl p-6 border border-slate-800 mb-8">
+  
+  <!-- Header: Judul & Tombol Filter -->
+  <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+    <div>
+      <h2 class="text-lg font-bold text-slate-200">Grafik Monitoring Realtime</h2>
+      <p class="text-xs text-slate-400">Gunakan filter untuk berpindah metrik data</p>
+    </div>
+    
+    <!-- Interactive Chart Selector Buttons -->
+    <div class="flex bg-slate-950/60 p-1 rounded-xl border border-slate-800/80 gap-1 self-start sm:self-auto">
+      <button onclick="switchChartMetric('temp')" id="btn-temp" class="metric-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition">Suhu</button>
+      <button onclick="switchChartMetric('hum')" id="btn-hum" class="metric-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Kelembapan</button>
+      <button onclick="switchChartMetric('light')" id="btn-light" class="metric-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Cahaya</button>
+    </div>
+  </div>
+  
+  <!-- Area Canvas Grafik -->
+  <div class="w-full h-64 md:h-80">
+    <canvas id="liveChart"></canvas>
+  </div>
+
+</section>
+
+    <!-- Isi Penjelasan Sensor -->
+<section id="info-sensor" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
+  <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+    <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+    </svg>
+    Penjelasan Sensor & Instrumen Sistem
+  </h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- 1. Mikrokontroler ESP32 -->
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div class="font-semibold text-cyan-400 mb-1">🧠 Mikrokontroler Utama: ESP32</div>
+      <p class="text-sm text-slate-300">Berfungsi sebagai otak sistem yang memproses data analitis dari seluruh sensor dan mengirimkannya secara real-time via koneksi Wi-Fi ke server web.</p>
+    </div>
+
+    <!-- 2. Sensor Suhu & Kelembapan (DHT22 / SHT31) -->
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div class="font-semibold text-rose-400 mb-1">🌡️ Sensor Suhu & Kelembapan (DHT22)</div>
+      <p class="text-sm text-slate-300">Mendeteksi derajat suhu lingkungan (°C) serta tingkat kelembapan relatif udara (%) di sekitar area sekolah secara presisi.</p>
+    </div>
+
+    <!-- 3. Sensor Intensitas Cahaya (LDR / BH1750) -->
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div class="font-semibold text-amber-400 mb-1">☀️ Sensor Intensitas Cahaya (LDR / BH1750)</div>
+      <p class="text-sm text-slate-300">Mengukur tingkat pencahayaan dan radiasi sinar matahari (Lux/ADC) untuk memantau kecerahan cuaca di lingkungan sekolah.</p>
+    </div>
+
+    <!-- 4. Sensor Kualitas Udara (MQ-135) -->
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div class="font-semibold text-emerald-400 mb-1">🍃 Sensor Kualitas Udara / MQ-135</div>
+      <p class="text-sm text-slate-300">Mendeteksi konsentrasi gas, asap, dan partikel polutan udara untuk menghitung Indeks Kualitas Udara (AQI) secara berkala.</p>
+    </div>
+  </div>
+</section>
+
+    <!-- FOOTER INFORMASI 2 KOLOM (MENU UTAMA DIHAPUS REVISI) -->
+    <footer class="glass rounded-3xl p-6 md:p-8 mt-8 border border-slate-800 shadow-2xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-slate-300">
+        
+        <!-- Kolom 1: Profil SMA Darul Ulum 1 -->
+        <div>
+          <h3 class="text-cyan-400 font-extrabold text-lg mb-3 tracking-wide">SMA Darul Ulum 1</h3>
+          <p class="text-xs leading-relaxed text-slate-400">
+            SMA Darul Ulum 1 Unggulan BPPT Jombang merupakan lembaga pendidikan yang didirikan tahun 1965 di Pondok Pesantren Darul Ulum. Mulai tahun 2006 bekerjasama dengan Badan Pengkajian dan Penerapan Teknologi (BPPT) Jakarta untuk meningkatkan kualitas SDM yang seimbang antara penguasaan IPTEK dan pengamalan IMTAQ.
+          </p>
+          <!-- Social Icons -->
+          <div class="flex flex-wrap gap-4 mt-5 text-cyan-400 text-xs font-medium">
+            <a href="#" class="hover:text-cyan-300 transition flex items-center gap-1.5 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800">
+              <span>🌐</span> Facebook
+            </a>
+            <a href="#" class="hover:text-cyan-300 transition flex items-center gap-1.5 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800">
+              <span>🐦</span> Twitter
+            </a>
+            <a href="#" class="hover:text-cyan-300 transition flex items-center gap-1.5 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800">
+              <span>🔗</span> LinkedIn
+            </a>
+            <a href="#" class="hover:text-cyan-300 transition flex items-center gap-1.5 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800">
+              <span>🎨</span> Behance
+            </a>
+          </div>
+        </div>
+
+        <!-- Kolom 2: Contact Us -->
+        <div class="md:pl-4">
+          <h3 class="text-cyan-400 font-extrabold text-lg mb-3 tracking-wide">Contact Us</h3>
+          
+          <div class="space-y-3.5 text-xs text-slate-400">
+            <div>
+              <span class="block text-slate-200 font-bold uppercase tracking-wider mb-1">ALAMAT</span>
+              <p class="leading-relaxed">Jl. KH. Romli Tamim No.15a, Wonokerto Selatan, Peterongan, Kec. Peterongan, Kabupaten Jombang, Jawa Timur 61481</p>
+            </div>
+            
+            <div>
+              <span class="block text-slate-200 font-bold uppercase tracking-wider mb-1">EMAIL</span>
+              <p class="text-cyan-400 font-medium">smudu1@yahoo.com</p>
+            </div>
+
+            <div>
+              <span class="block text-slate-200 font-bold uppercase tracking-wider mb-1">CONTACT</span>
+              <p class="text-cyan-400 font-medium">(0321) 860129</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="border-t border-slate-800 mt-6 pt-4 text-center text-xs text-slate-500">
+        Powered by ESP32 &bull; Interactive Anime.js Engine &bull; AWS Smart School Monitoring
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // CHART & GLOBAL STATE CONFIGURATION
+    // -------------------------------------------------------------
+    let activeMetric = 'temp';
+    const MAX_POINTS = 10;
+    let liveChart = null;
+
+    const chartConfig = {
+      temp: { label: 'Suhu Udara (°C)', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.15)' },
+      hum: { label: 'Kelembapan Udara (%)', color: '#60a5fa', bg: 'rgba(96, 165, 250, 0.15)' },
+      light: { label: 'Intensitas Cahaya (lx)', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.15)' }
+    };
+
+    // 3D Card Tilt Effects
+    function cardTilt(e, card) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      card.style.transform = `perspective(1000px) rotateX(${-y / 15}deg) rotateY(${x / 15}deg) scale3d(1.02, 1.02, 1.02)`;
+    }
+
+    function resetTilt(card) {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    }
+
+    // Particle Background System
+    function initBgCanvas() {
+      const canvas = document.getElementById('bg-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const particles = Array.from({ length: 45 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2 + 0.5,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        alpha: Math.random() * 0.5 + 0.2
+      }));
+
+      function animateParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(animateParticles);
+      }
+      animateParticles();
+    }
+
+    // Initialize Chart & Background on Page Load
+    window.addEventListener('DOMContentLoaded', () => {
+      const ctx = document.getElementById('liveChart').getContext('2d');
+      liveChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: chartConfig.temp.label,
+            data: [],
+            borderColor: chartConfig.temp.color,
+            backgroundColor: chartConfig.temp.bg,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: chartConfig.temp.color
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } } }
+          },
+          scales: {
+            x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+
+      initBgCanvas();
+    });
+
+    // -------------------------------------------------------------
+    // CINEMATIC OPENING FILM & LOADING SEQUENCE (ANIME.JS)
+    // -------------------------------------------------------------
+    function playCinematicIntro() {
+  const introOverlay = document.getElementById('cinematic-intro');
+  introOverlay.style.visibility = 'visible';
+  introOverlay.style.opacity = '1';
+  document.body.classList.remove('cinematic-active');
+
+  // Reset teks loading ke 0%
+  const loadingText = document.getElementById('loading-text');
+  if (loadingText) loadingText.innerText = "MEMUAT 0%";
+
+  const timeline = anime.timeline({
+    easing: 'easeOutExpo'
+  });
+
+  // Step 1: Glow aura & Maskot Zoom In
+  timeline.add({
+    targets: '#intro-glow',
+    opacity: [0, 0.7],
+    scale: [0.5, 1],
+    duration: 1000
+  })
+  .add({
+    targets: '#intro-mascot-wrapper',
+    opacity: [0, 1],
+    scale: [0.3, 1],
+    rotate: [-10, 0],
+    duration: 1400,
+    elasticity: 600
+  }, '-=800')
+  // Step 2: Title reveal
+  .add({
+    targets: '#intro-title',
+    opacity: [0, 1],
+    translateY: [30, 0],
+    duration: 1000
+  }, '-=600')
+  // Step 3: Animasi hitung persentase 0% - 100%
+  .add({
+    targets: '#loading-box',
+    opacity: [1, 1],
+    duration: 1000, // Durasi loading berjalan selama 2 detik
+    begin: function() {
+      let percent = 0;
+      const interval = setInterval(() => {
+        percent += 2;
+        if (loadingText) loadingText.innerText = `MEMUAT ${percent}%`;
+        if (percent >= 100) {
+          clearInterval(interval);
+        }
+      }, 35); // Kecepatan penambahan angka persentase
+    },
+    complete: function() {
+      finishIntro();
+    }
+  });
+}
+
+    function finishIntro() {
+      document.body.classList.add('cinematic-active');
+      const introOverlay = document.getElementById('cinematic-intro');
+      
+      anime({
+        targets: '#intro-mascot-wrapper, #intro-title, #loading-box, #intro-glow',
+        opacity: 0,
+        scale: 1.1,
+        duration: 600,
+        easing: 'easeInQuad',
+        complete: function() {
+          introOverlay.style.opacity = '0';
+          setTimeout(() => {
+            introOverlay.style.visibility = 'hidden';
+          }, 800);
+        }
+      });
+    }
+
+    // Trigger opening animation automatically on window load
+    window.addEventListener('load', () => {
+      playCinematicIntro();
+    });
+
+    function switchChartMetric(metric) {
+      if (!liveChart) return;
+      activeMetric = metric;
+      document.querySelectorAll('.metric-btn').forEach(btn => {
+        btn.className = 'metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition';
+      });
+      const activeBtn = document.getElementById(`btn-${metric}`);
+      if (activeBtn) activeBtn.className = 'metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-500 text-slate-950 transition';
+
+      liveChart.data.datasets[0].label = chartConfig[metric].label;
+      liveChart.data.datasets[0].borderColor = chartConfig[metric].color;
+      liveChart.data.datasets[0].backgroundColor = chartConfig[metric].bg;
+      liveChart.data.datasets[0].pointBackgroundColor = chartConfig[metric].color;
+      liveChart.update();
+    }
+
+    // -------------------------------------------------------------
+    // 4. ANIMASI ANGKA & FETCH DATA DARI ESP32
+    // -------------------------------------------------------------
+    function animateValue(id, start, end, duration) {
+      const obj = document.getElementById(id);
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const val = (progress * (end - start) + start);
+        obj.innerText = id === 'temp' || id === 'hum' ? val.toFixed(1) : Math.floor(val);
+        if (progress < 1) window.requestAnimationFrame(step);
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    let storedData = { temperature: 27.5, humidity: 62.0, light: 750, air_quality: 380 };
+
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/data');
+        if (response.ok) {
+          storedData = await response.json();
+        }
+      } catch (err) {
+        // Fallback Simulasi Interaktif jika dibuka tanpa ESP32
+        storedData = {
+          temperature: +(25 + Math.random() * 6).toFixed(1),
+          humidity: +(55 + Math.random() * 20).toFixed(1),
+          light: Math.floor(400 + Math.random() * 500),
+          air_quality: Math.floor(300 + Math.random() * 200)
+        };
+      }
+
+      // Trigger Animasi Angka
+      animateValue('temp', parseFloat(document.getElementById('temp').innerText), storedData.temperature, 800);
+      animateValue('hum', parseFloat(document.getElementById('hum').innerText), storedData.humidity, 800);
+      animateValue('light', parseInt(document.getElementById('light').innerText), storedData.light, 800);
+      animateValue('aqi', parseInt(document.getElementById('aqi').innerText), storedData.air_quality, 800);
+
+      // Update Progress Bars
+      document.getElementById('temp-bar').style.width = `${Math.min((storedData.temperature / 50) * 100, 100)}%`;
+      document.getElementById('hum-bar').style.width = `${Math.min(storedData.humidity, 100)}%`;
+      document.getElementById('light-bar').style.width = `${Math.min((storedData.light / 1024) * 100, 100)}%`;
+      document.getElementById('aqi-bar').style.width = `${Math.min((storedData.air_quality / 1000) * 100, 100)}%`;
+
+      // Status Udara Dynamic Text
+      const aqiStatus = document.getElementById('aqi-status');
+      if (storedData.air_quality < 450) {
+        aqiStatus.innerText = "Status: Sangat Sehat 🍃";
+        aqiStatus.className = "text-xs text-emerald-400 font-semibold mt-1";
+      } else {
+        aqiStatus.innerText = "Status: Perlu Waspada ⚠️";
+        aqiStatus.className = "text-xs text-amber-400 font-semibold mt-1";
+      }
+
+      // Push Data ke Chart (dengan Null-Check)
+      if (liveChart && liveChart.data && liveChart.data.labels) {
+        const timeStr = new Date().toLocaleTimeString();
+        liveChart.data.labels.push(timeStr);
+        liveChart.data.datasets[0].data.push(
+          activeMetric === 'temp' ? storedData.temperature :
+          activeMetric === 'hum' ? storedData.humidity : storedData.light
+        );
+
+        if (liveChart.data.labels.length > MAX_POINTS) {
+          liveChart.data.labels.shift();
+          liveChart.data.datasets[0].data.shift();
+        }
+        liveChart.update();
+      }
+    }
+
+    function manualRefresh() {
+      // Anime.js Rotasi Icon Sync Button
+      anime({
+        targets: '#refresh-icon',
+        rotate: '1turn',
+        duration: 800,
+        easing: 'easeInOutQuad'
+      });
+      fetchData();
+    }
+
+    // Eksekusi otomatis tiap 2.5 detik
+    setInterval(fetchData, 2500);
+
+    // Animasi Muncul Pertama Kali (Entrance Animation)
+    anime({
+      targets: '.glass-card, header, section, footer',
+      translateY: [30, 0],
+      opacity: [0, 1],
+      delay: anime.stagger(150),
+      easing: 'easeOutExpo'
+    });
+  </script>
+</body>
+</html>

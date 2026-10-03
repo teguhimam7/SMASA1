@@ -123,14 +123,39 @@
           </div>
         </div>
 
-        <!-- Waktu Digital & Hari Interaktif (Kanan) -->
-        <div class="w-full md:w-auto flex-shrink-0 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 md:p-5 text-center md:text-right backdrop-blur-md">
-          <div class="text-xs font-semibold text-cyan-400 tracking-wider uppercase mb-1" id="digital-day">MEMUAT HARI...</div>
-          <div class="text-3xl md:text-4xl font-extrabold tracking-tight text-white font-mono" id="digital-clock">00:00:00</div>
-          <div class="text-xs text-slate-400 mt-1 font-medium" id="digital-date">MEMUAT TANGGAL...</div>
-        </div>
+                <!-- LOKASI (kiri) + JAM GMT+7 (kanan) -->
+        <div class="w-full md:w-auto flex-shrink-0 bg-slate-950/60 border border-slate-800/80 rounded-2xl backdrop-blur-md overflow-hidden flex flex-col sm:flex-row items-stretch">
 
-      </div>
+          <!-- LOKASI: klik untuk membuka peta Google Maps -->
+          <button type="button" onclick="bukaPeta()" title="Klik untuk melihat peta Google Maps"
+            class="group flex items-center gap-3 p-4 md:p-5 text-left hover:bg-slate-800/60 transition border-b sm:border-b-0 sm:border-r border-slate-800/80">
+            <span class="relative w-12 h-12 shrink-0 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition">
+              <!-- Ikon sekolah -->
+              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1.8v4.2"/><path d="M12 2h3.6l-1.1 1.3 1.1 1.3H12"/>
+                <path d="M2.8 10.2L12 6l9.2 4.2"/>
+                <path d="M5 10.8V19M19 10.8V19M2.8 19.2h18.4"/>
+                <path d="M10 19v-3.6a2 2 0 014 0V19"/>
+                <path d="M7.3 13.2v2.2M16.7 13.2v2.2"/>
+              </svg>
+              <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </span>
+            <span class="leading-tight">
+              <span class="block text-[10px] uppercase tracking-wider text-cyan-400 font-semibold">Lokasi Stasiun</span>
+              <span class="block text-sm font-bold text-white group-hover:text-cyan-300 transition">SMA Darul Ulum 1</span>
+              <span class="block text-[11px] text-slate-400">Peterongan, Jombang</span>
+              <span class="block mt-1 text-[10px] font-semibold text-cyan-400">Lihat di Google Maps ↗</span>
+            </span>
+          </button>
+
+          <!-- JAM DIGITAL -->
+          <div class="p-4 md:p-5 text-center md:text-right">
+            <div class="text-xs font-semibold text-cyan-400 tracking-wider uppercase mb-1" id="digital-day">MEMUAT HARI...</div>
+            <div class="text-3xl md:text-4xl font-extrabold tracking-tight text-white font-mono" id="digital-clock">00:00:00</div>
+            <div class="text-xs text-slate-400 mt-1 font-medium" id="digital-date">MEMUAT TANGGAL...</div>
+            <div id="digital-tz" class="inline-block mt-2 px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-[10px] font-bold text-cyan-300 tracking-wider">GMT+7</div>
+          </div>
+        </div>
     </header>
 
     <!-- 2. METRIC CARDS GRID (6 KARTU SENSOR) -->
@@ -373,6 +398,14 @@
       document.getElementById('digital-day').innerText = `HARI ${dayName.toUpperCase()}`;
       document.getElementById('digital-clock').innerText = `${hours}:${minutes}:${seconds}`;
       document.getElementById('digital-date').innerText = `${dayNum} ${monthName} ${year}`;
+      
+      // Keterangan zona waktu (otomatis mengikuti jam perangkat)
+      const offset = -now.getTimezoneOffset() / 60;   // WIB = +7
+      const tanda = offset >= 0 ? '+' : '-';
+      const zona = Number.isInteger(offset) ? Math.abs(offset) : Math.abs(offset).toFixed(1);
+      const namaZona = offset === 7 ? 'WIB • ' : offset === 8 ? 'WITA • ' : offset === 9 ? 'WIT • ' : '';
+      document.getElementById('digital-tz').innerText = `${namaZona}GMT${tanda}${zona}`;
+      // ▲▲▲ SAMPAI SINI ▲▲▲
     }
 
     setInterval(updateClock, 1000);

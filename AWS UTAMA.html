@@ -262,10 +262,8 @@ html {
   <a href="#dashboard" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Dashboard</a>
   
   <!-- Mengarahkan ke Grafik / Tabel Monitoring -->
-  <a href="#grafik-monitoring" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Tabel Data</a>
-  
-  <!-- Mengarahkan ke Penjelasan Sensor -->
   <a href="#info-sensor" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Info Sensor</a>
+  <a href="GRAFIK_1.1.html" target="_blank" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">PUSAT KONTROL</a>  <!-- Mengarahkan ke Penjelasan Sensor -->
 </nav>
 
   <!-- KANAN: TOMBOL ASLI -->
@@ -339,103 +337,9 @@ html {
 
   </div>
 </div>
-
-    <!-- Metric Cards Grid dengan Interaksi Hover & Animated Counter -->
-    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      
-      <!-- Suhu -->
-      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-        <div class="flex justify-between items-start">
-          <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Suhu Udara</span>
-          <span class="text-2xl animate-bounce">🌡️</span>
-        </div>
-        <div class="my-4">
-          <div class="text-5xl font-extrabold tracking-tight text-cyan-400">
-            <span id="temp" class="metric-val">0.0</span><span class="text-2xl text-slate-400">°C</span>
-          </div>
-        </div>
-        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-          <div id="temp-bar" class="bg-gradient-to-r from-cyan-500 to-sky-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-        </div>
-      </div>
-
-      <!-- Kelembapan -->
-      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-        <div class="flex justify-between items-start">
-          <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kelembapan</span>
-          <span class="text-2xl animate-pulse">💧</span>
-        </div>
-        <div class="my-4">
-          <div class="text-5xl font-extrabold tracking-tight text-blue-400">
-            <span id="hum" class="metric-val">0.0</span><span class="text-2xl text-slate-400">%</span>
-          </div>
-        </div>
-        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-          <div id="hum-bar" class="bg-gradient-to-r from-blue-500 to-indigo-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-        </div>
-      </div>
-
-      <!-- Cahaya -->
-      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-        <div class="flex justify-between items-start">
-          <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Intensitas LDR</span>
-          <span class="text-2xl">☀️</span>
-        </div>
-        <div class="my-4">
-          <div class="text-5xl font-extrabold tracking-tight text-amber-400">
-            <span id="light" class="metric-val">0</span><span class="text-2xl text-slate-400"> lx</span>
-          </div>
-        </div>
-        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-          <div id="light-bar" class="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-        </div>
-      </div>
-
-      <!-- Air Quality -->
-      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-        <div class="flex justify-between items-start">
-          <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Indeks Udara</span>
-          <span class="text-2xl">🍃</span>
-        </div>
-        <div class="my-4">
-          <div class="text-5xl font-extrabold tracking-tight text-emerald-400">
-            <span id="aqi" class="metric-val">0</span>
-          </div>
-          <p id="aqi-status" class="text-xs text-emerald-400 font-semibold mt-1">Status: Memuat...</p>
-        </div>
-        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-          <div id="aqi-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-        </div>
-      </div>
-
     </main>
 
-    <!-- INTERACTIVE LINE CHART SECTION (SUDAH DIBUNGKUS KOTAK) -->
-<section id="grafik-monitoring" class="bg-slate-900/80 backdrop-blur-md rounded-2xl p-6 border border-slate-800 mb-8">
-  
-  <!-- Header: Judul & Tombol Filter -->
-  <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
-    <div>
-      <h2 class="text-lg font-bold text-slate-200">Grafik Monitoring Realtime</h2>
-      <p class="text-xs text-slate-400">Gunakan filter untuk berpindah metrik data</p>
-    </div>
-    
-    <!-- Interactive Chart Selector Buttons -->
-    <div class="flex bg-slate-950/60 p-1 rounded-xl border border-slate-800/80 gap-1 self-start sm:self-auto">
-      <button onclick="switchChartMetric('temp')" id="btn-temp" class="metric-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition">Suhu</button>
-      <button onclick="switchChartMetric('hum')" id="btn-hum" class="metric-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Kelembapan</button>
-      <button onclick="switchChartMetric('light')" id="btn-light" class="metric-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Cahaya</button>
-    </div>
-  </div>
-  
-  <!-- Area Canvas Grafik -->
-  <div class="w-full h-64 md:h-80">
-    <canvas id="liveChart"></canvas>
-  </div>
-
-</section>
-
-    <!-- Isi Penjelasan Sensor -->
+    <!-- Penjelasan sensor  -->
 <section id="info-sensor" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
   <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
     <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -468,6 +372,34 @@ html {
       <div class="font-semibold text-emerald-400 mb-1">🍃 Sensor Kualitas Udara / MQ-135</div>
       <p class="text-sm text-slate-300">Mendeteksi konsentrasi gas, asap, dan partikel polutan udara untuk menghitung Indeks Kualitas Udara (AQI) secara berkala.</p>
     </div>
+
+    <!-- 5. Sensor Tekanan Udara (BMP280 / BME280) -->
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div class="font-semibold text-purple-400 mb-1">barometer 🎈 Sensor Tekanan Udara (BMP280)</div>
+      <p class="text-sm text-slate-300">Mengukur tekanan atmosfer (hPa) dan estimasi ketinggian untuk prakiraan perubahan cuaca lokal.</p>
+    </div>
+
+    <!-- 6. Sensor Kecepatan Angin (Anemometer) -->
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div class="font-semibold text-cyan-400 mb-1">💨 Sensor Kecepatan Angin (Anemometer)</div>
+      <p class="text-sm text-slate-300">Mendeteksi dan mengukur kecepatan aliran hembusan angin (m/s atau km/jam) di area stasiun cuaca.</p>
+    </div>
+
+    <!-- 7. Sensor Curah Hujan (Rain Gauge) -->
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div class="font-semibold text-blue-400 mb-1">🌧️ Sensor Curah Hujan (Rain Gauge)</div>
+      <p class="text-sm text-slate-300">Menghitung presipitasi dan intensitas curah hujan (mm) secara akurat saat terjadi hujan.</p>
+    </div>
+
+    <!-- 8. Sensor UV (GUVA-S12SD) -->
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div class="font-semibold text-yellow-400 mb-1">☀️ Sensor Indeks Sinar UV</div>
+      <p class="text-sm text-slate-300">Mengukur tingkat radiasi ultraviolet dari sinar matahari untuk memantau bahaya paparan UV harian.</p>
+    </div>
+
+    <!-- 8. Sensor UV (GUVA-S12SD) -->
+    <!-- 8. Sensor UV (GUVA-S12SD) -->
+    <!-- 8. Sensor UV (GUVA-S12SD) -->
   </div>
 </section>
 
@@ -528,110 +460,7 @@ html {
     </footer>
 
   </div>
-
-  <script>
-    // -------------------------------------------------------------
-    // CHART & GLOBAL STATE CONFIGURATION
-    // -------------------------------------------------------------
-    let activeMetric = 'temp';
-    const MAX_POINTS = 10;
-    let liveChart = null;
-
-    const chartConfig = {
-      temp: { label: 'Suhu Udara (°C)', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.15)' },
-      hum: { label: 'Kelembapan Udara (%)', color: '#60a5fa', bg: 'rgba(96, 165, 250, 0.15)' },
-      light: { label: 'Intensitas Cahaya (lx)', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.15)' }
-    };
-
-    // 3D Card Tilt Effects
-    function cardTilt(e, card) {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      card.style.transform = `perspective(1000px) rotateX(${-y / 15}deg) rotateY(${x / 15}deg) scale3d(1.02, 1.02, 1.02)`;
-    }
-
-    function resetTilt(card) {
-      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-    }
-
-    // Particle Background System
-    function initBgCanvas() {
-      const canvas = document.getElementById('bg-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      let width = canvas.width = window.innerWidth;
-      let height = canvas.height = window.innerHeight;
-
-      window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-      });
-
-      const particles = Array.from({ length: 45 }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        radius: Math.random() * 2 + 0.5,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        alpha: Math.random() * 0.5 + 0.2
-      }));
-
-      function animateParticles() {
-        ctx.clearRect(0, 0, width, height);
-        particles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          if (p.x < 0) p.x = width;
-          if (p.x > width) p.x = 0;
-          if (p.y < 0) p.y = height;
-          if (p.y > height) p.y = 0;
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha})`;
-          ctx.fill();
-        });
-        requestAnimationFrame(animateParticles);
-      }
-      animateParticles();
-    }
-
-    // Initialize Chart & Background on Page Load
-    window.addEventListener('DOMContentLoaded', () => {
-      const ctx = document.getElementById('liveChart').getContext('2d');
-      liveChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: [],
-          datasets: [{
-            label: chartConfig.temp.label,
-            data: [],
-            borderColor: chartConfig.temp.color,
-            backgroundColor: chartConfig.temp.bg,
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: chartConfig.temp.color
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } } }
-          },
-          scales: {
-            x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-          }
-        }
-      });
-
-      initBgCanvas();
-    });
-
+<script>
     // -------------------------------------------------------------
     // CINEMATIC OPENING FILM & LOADING SEQUENCE (ANIME.JS)
     // -------------------------------------------------------------

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafik Monitoring ESP32 #2 — AWS EcoSkola</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:#030712;overflow-x:hidden}
+  .glass{background:rgba(15,23,42,.65);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+  .glass-card{background:rgba(30,41,59,.4);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);transition:all .3s}
+  .glass-card:hover{border-color:rgba(56,189,248,.5);box-shadow:0 0 25px rgba(56,189,248,.25)}
+  .card-active{border-color:rgba(56,189,248,.8)!important;box-shadow:0 0 20px rgba(56,189,248,.3)!important;background:rgba(30,41,59,.7)!important}
+  @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .mascot-animation{animation:fl 3.5s ease-in-out infinite}
+</style>
+</head>
+<body class="text-slate-100 p-4 md:p-8 min-h-screen">
+<div class="max-w-6xl mx-auto space-y-8">
+
+  <!-- NAV -->
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <a href="AWS UTAMA.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-sm font-semibold text-cyan-400 border border-slate-800 hover:border-cyan-500/40 transition">← Kembali ke Halaman Utama</a>
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="px-3.5 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-semibold text-slate-300 flex items-center gap-2">
+        <span id="status-dot" class="w-2 h-2 rounded-full bg-slate-500 animate-pulse"></span>
+        <span id="status-text">Menghubungkan ke Supabase...</span>
+      </div>
+      <a href="https://www.google.com/maps/search/?api=1&query=SMA+Darul+Ulum+1+Unggulan+BPPT+Jombang"
+        target="_blank" rel="noopener" title="Lihat di Google Maps"
+        class="px-3.5 py-1 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 flex items-center gap-2.5 transition">
+        <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        <span class="leading-tight">
+          <span class="block text-[9px] uppercase tracking-wider text-cyan-400 font-semibold">Lokasi</span>
+          <span class="block text-xs font-bold text-white">Jombang</span>
+        </span>
+      </a>
+      <button onclick="manualSync()" id="btn-sync" class="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-semibold text-cyan-400 flex items-center gap-2 transition active:scale-95">
+        <span id="sync-icon">⟳</span><span id="sync-text">Sync Data</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="glass rounded-3xl p-6 md:p-8 border border-slate-800 shadow-2xl">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+        <div class="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
+          <div class="absolute inset-0 bg-cyan-500/20 rounded-full blur-2xl"></div>
+          <!-- Ganti link gambar ini jika punya maskot #2 -->
+          <img src="https://i.ibb.co.com/fddmWtSh/mascot-1.png" alt="Maskot ESP32-2" class="mascot-animation relative z-10 w-full h-full object-contain">
+        </div>
+        <div>
+          <span class="inline-block px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-xs font-semibold mb-2">🌱 Stasiun Tanah, Udara & Lampu</span>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Informasi Telemetri ESP32 Modul #2</h1>
+          <p class="text-slate-400 text-xs md:text-sm mt-1 max-w-xl leading-relaxed">
+            Modul ESP32 ini memantau kelembaban tanah, kualitas udara (MQ135), dan cahaya sekitar (LDR). Saat gelap, relay otomatis menyalakan lampu. Datanya tampil real-time di sini dan layar OLED.
+          </p>
+        </div>
+      </div>
+      <div class="w-full sm:w-80 flex-shrink-0 flex flex-col gap-2">
+        <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl px-4 py-3 flex items-center justify-center gap-2">
+          <span id="digital-day" class="text-[15px] font-semibold text-cyan-400 whitespace-nowrap">...</span>
+          <span class="text-slate-600">•</span>
+          <span id="digital-date" class="text-base text-slate-300 font-medium whitespace-nowrap">...</span>
+        </div>
+        <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl py-3 text-center">
+          <div id="digital-clock" class="text-3xl md:text-4xl font-extrabold text-white font-mono">00:00:00</div>
+          <span id="digital-tz" class="inline-block mt-2 px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-[10px] font-bold text-cyan-300">GMT+7</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- KARTU SENSOR -->
+  <section>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-white">📊 Metrik Realtime Sensor ESP32 #2</h2>
+      <span class="text-xs text-slate-400">Klik kartu untuk menampilkan pada grafik</span>
+    </div>
+    <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+      <div onclick="selectMetric('tanah')" id="card-tanah" class="glass-card card-active rounded-3xl p-5 cursor-pointer">
+        <div class="flex justify-between"><span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kelembaban Tanah</span><span class="text-2xl">🌱</span></div>
+        <div class="my-3">
+          <div class="text-4xl font-extrabold text-emerald-400"><span id="tanah">0</span><span class="text-xl text-slate-400"> %</span></div>
+          <p id="tanah-status" class="text-xs text-slate-400 font-semibold mt-0.5">Status: --</p>
+        </div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 p-0.5 border border-slate-700/50"><div id="tanah-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-1000" style="width:0%"></div></div>
+      </div>
+
+      <div onclick="selectMetric('mq')" id="card-mq" class="glass-card rounded-3xl p-5 cursor-pointer">
+        <div class="flex justify-between"><span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kualitas Udara</span><span class="text-2xl">🌫️</span></div>
+        <div class="my-3">
+          <div class="text-4xl font-extrabold text-orange-400"><span id="mq">0</span><span class="text-xl text-slate-400"> ADC</span></div>
+          <p id="mq-status" class="text-xs text-slate-400 font-semibold mt-0.5">Status: --</p>
+        </div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 p-0.5 border border-slate-700/50"><div id="mq-bar" class="bg-gradient-to-r from-orange-500 to-red-400 h-full rounded-full transition-all duration-1000" style="width:0%"></div></div>
+      </div>
+
+      <div onclick="selectMetric('ldr')" id="card-ldr" class="glass-card rounded-3xl p-5 cursor-pointer">
+        <div class="flex justify-between"><span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Intensitas LDR</span><span class="text-2xl">☀️</span></div>
+        <div class="my-3">
+          <div class="text-4xl font-extrabold text-amber-400"><span id="ldr">0</span><span class="text-xl text-slate-400"> ADC</span></div>
+          <p id="ldr-status" class="text-xs text-slate-400 font-semibold mt-0.5">Status: --</p>
+        </div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 p-0.5 border border-slate-700/50"><div id="ldr-bar" class="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-1000" style="width:0%"></div></div>
+      </div>
+
+      <div onclick="selectMetric('relay')" id="card-relay" class="glass-card rounded-3xl p-5 cursor-pointer">
+        <div class="flex justify-between"><span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Lampu (Relay)</span><span class="text-2xl">💡</span></div>
+        <div class="my-3">
+          <div id="relay" class="text-4xl font-extrabold text-purple-400">--</div>
+          <p id="relay-status" class="text-xs text-slate-400 font-semibold mt-0.5">Status: --</p>
+        </div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 p-0.5 border border-slate-700/50"><div id="relay-bar" class="bg-gradient-to-r from-purple-500 to-fuchsia-400 h-full rounded-full transition-all duration-1000" style="width:0%"></div></div>
+      </div>
+
+    </main>
+  </section>
+
+  <!-- GRAFIK -->
+  <section class="bg-slate-900/80 rounded-3xl p-6 border border-slate-800 shadow-xl">
+    <div class="flex flex-col lg:flex-row justify-between lg:items-center gap-4 mb-6">
+      <div>
+        <h2 class="text-xl font-bold text-slate-100">📈 Grafik Telemetri Realtime ESP32 #2</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Memantau riwayat tren data sensor secara berkelanjutan</p>
+      </div>
+      <div class="flex flex-wrap bg-slate-950/70 p-1.5 rounded-2xl border border-slate-800/80 gap-1">
+        <button onclick="selectMetric('tanah')" id="btn-tanah" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-500 text-slate-950">Tanah</button>
+        <button onclick="selectMetric('mq')" id="btn-mq" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200">Udara</button>
+        <button onclick="selectMetric('ldr')" id="btn-ldr" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200">Cahaya</button>
+        <button onclick="selectMetric('relay')" id="btn-relay" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200">Lampu</button>
+      </div>
+    </div>
+    <div class="w-full h-80 relative"><canvas id="liveChart"></canvas></div>
+  </section>
+
+  <!-- PENJELASAN SENSOR -->
+  <section class="bg-slate-900/80 rounded-3xl p-6 border border-slate-800 shadow-xl">
+    <h2 class="text-xl font-bold text-slate-100 mb-5">❓ Penjelasan Sensor ESP32 #2</h2>
+    <div class="space-y-3">
+
+      <details class="group bg-slate-950/60 border border-slate-800 rounded-2xl" open>
+        <summary class="flex justify-between cursor-pointer list-none p-4 text-sm font-semibold hover:text-cyan-300">
+          <span>1. Sensor Kelembaban Tanah 🌱</span><span class="text-cyan-400 group-open:rotate-180 transition-transform">▾</span></summary>
+        <div class="px-4 pb-4 text-xs md:text-sm text-slate-400 leading-relaxed">
+          Sensor ditancapkan ke tanah. Nilai ADC dikonversi menjadi persen: sekitar 3350 (sangat kering) menjadi 0% dan sekitar 1200 (sangat basah) menjadi 100%. Selain persen, ada status <span class="text-emerald-400 font-semibold">BASAH</span> atau <span class="text-orange-400 font-semibold">KERING</span> dari pin digital sensor, yang batasnya diatur lewat potensiometer di modul.
+        </div>
+      </details>
+
+      <details class="group bg-slate-950/60 border border-slate-800 rounded-2xl">
+        <summary class="flex justify-between cursor-pointer list-none p-4 text-sm font-semibold hover:text-cyan-300">
+          <span>2. Sensor Udara MQ135 🌫️</span><span class="text-cyan-400 group-open:rotate-180 transition-transform">▾</span></summary>
+        <div class="px-4 pb-4 text-xs md:text-sm text-slate-400 leading-relaxed">
+          MQ135 mendeteksi gas di udara seperti amonia, asap, dan CO₂. Semakin besar nilai ADC, semakin kotor udaranya. Udara dianggap <span class="text-red-400 font-semibold">TERCEMAR</span> jika nilai ADC lebih dari 2000 atau pin digital sensor aktif. Selain itu statusnya <span class="text-emerald-400 font-semibold">BERSIH</span>. Sensor ini perlu pemanasan beberapa menit setelah dinyalakan agar stabil.
+        </div>
+      </details>
+
+      <details class="group bg-slate-950/60 border border-slate-800 rounded-2xl">
+        <summary class="flex justify-between cursor-pointer list-none p-4 text-sm font-semibold hover:text-cyan-300">
+          <span>3. Sensor Cahaya LDR & Lampu Otomatis 💡</span><span class="text-cyan-400 group-open:rotate-180 transition-transform">▾</span></summary>
+        <div class="px-4 pb-4 text-xs md:text-sm text-slate-400 leading-relaxed space-y-2">
+          <p>Pada modul LDR ini, nilai ADC <span class="font-bold text-slate-200">tinggi berarti gelap</span> dan nilai rendah berarti terang.</p>
+          <p>Relay menyalakan lampu saat nilai LDR lebih dari <span class="font-bold text-slate-200">1800</span> (gelap) dan mematikannya saat kurang dari <span class="font-bold text-slate-200">1000</span> (terang). Selisih kedua angka itu (histeresis) mencegah lampu berkedip-kedip saat cahaya berada di tengah-tengah.</p>
+        </div>
+      </details>
+
+      <details class="group bg-slate-950/60 border border-slate-800 rounded-2xl">
+        <summary class="flex justify-between cursor-pointer list-none p-4 text-sm font-semibold hover:text-cyan-300">
+          <span>4. Cara membaca halaman ini</span><span class="text-cyan-400 group-open:rotate-180 transition-transform">▾</span></summary>
+        <div class="px-4 pb-4 text-xs md:text-sm text-slate-400 leading-relaxed">
+          Indikator di kanan atas: <span class="text-cyan-400">LIVE</span> berarti data sedang masuk, <span class="text-amber-400">MENUNGGU DATA</span> berarti data terlambat, <span class="text-red-400">OFFLINE</span> berarti sudah lama tidak ada data. Grafik menampilkan 12 data terakhir. Klik kartu atau tombol di atas grafik untuk berpindah sensor.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer class="glass rounded-3xl p-6 md:p-8 border border-slate-800 shadow-2xl">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-slate-300">
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-9 h-9 rounded-xl bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30 text-cyan-400 font-bold">🏫</div>
+          <h3 class="text-cyan-400 font-extrabold text-lg tracking-wide">SMA Darul Ulum 1 Unggulan BPPT</h3>
+        </div>
+        <p class="text-xs leading-relaxed text-slate-400">
+          SMA Darul Ulum 1 Unggulan BPPT Jombang merupakan lembaga pendidikan yang didirikan tahun 1965 di Pondok Pesantren Darul Ulum. Berkolaborasi dengan Badan Pengkajian dan Penerapan Teknologi (BPPT) Jakarta untuk mewujudkan integrasi kualitas IPTEK dan IMTAQ berbasis teknologi ramah lingkungan.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-5 text-cyan-400 text-xs font-medium">
+          <span class="bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800">📍 Jombang, Jawa Timur</span>
+          <span class="bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800">🌐 AWS EcoSkola System</span>
+        </div>
+      </div>
+      <div class="md:pl-4 border-t md:border-t-0 border-slate-800/80 pt-6 md:pt-0">
+        <h3 class="text-cyan-400 font-extrabold text-lg mb-3 tracking-wide">Hubungi Sekolah Kami</h3>
+        <div class="space-y-3 text-xs text-slate-400">
+          <div>
+            <span class="block text-slate-200 font-bold uppercase tracking-wider mb-0.5">ALAMAT</span>
+            <p class="leading-relaxed">Jl. KH. Romli Tamim No.15a, Wonokerto Selatan, Peterongan, Kec. Peterongan, Kabupaten Jombang, Jawa Timur 61481</p>
+          </div>
+          <div class="flex flex-wrap gap-6 pt-1">
+            <div>
+              <span class="block text-slate-200 font-bold uppercase tracking-wider mb-0.5">EMAIL</span>
+              <p class="text-cyan-400 font-medium">smudu1@yahoo.com</p>
+            </div>
+            <div>
+              <span class="block text-slate-200 font-bold uppercase tracking-wider mb-0.5">TELEPON</span>
+              <p class="text-cyan-400 font-medium">(0321) 860129</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-slate-800/80 mt-6 pt-4 text-center text-xs text-slate-500">
+      AWS EcoSkola &bull; Powered by ESP32 Telemetry Engine &bull; SMA Darul Ulum 1 Unggulan BPPT Jombang
+    </div>
+  </footer>
+</div>
+
+<script>
+  // ---------- KONFIGURASI ----------
+  const SUPABASE_URL = 'https://rzaptntesoseztxhmnwh.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_dlaYMSuis-XK4EQ-wnOaJg_dvKkGBdv';
+  const TABLE_NAME   = 'sensor_data_2';      // tabel khusus ESP32 #2
+
+  const ADC_MAX = 4095, MAX_POINTS = 12;
+  const LIVE_AFTER = 30000, OFFLINE_AFTER = 180000;
+  const KEYS = ['tanah', 'mq', 'ldr', 'relay'];
+
+  const chartConfig = {
+    tanah: { label: 'Kelembaban Tanah (%)',     color: '#34d399', bg: 'rgba(52,211,153,.15)' },
+    mq:    { label: 'Kualitas Udara MQ135 (ADC)', color: '#fb923c', bg: 'rgba(251,146,60,.15)' },
+    ldr:   { label: 'Intensitas Cahaya LDR (ADC)', color: '#fbbf24', bg: 'rgba(251,191,36,.15)' },
+    relay: { label: 'Status Lampu (0=OFF, 1=ON)', color: '#c084fc', bg: 'rgba(192,132,252,.15)' }
+  };
+  const CARD_META = {
+    tanah: { dec: 0, bar: v => v },
+    mq:    { dec: 0, bar: v => v / ADC_MAX * 100 },
+    ldr:   { dec: 0, bar: v => v / ADC_MAX * 100 }
+  };
+
+  let activeMetric = 'tanah', liveChart = null, lastDataTime = 0;
+  const history = { labels: [], tanah: [], mq: [], ldr: [], relay: [] };
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ---------- JAM ----------
+  function updateClock() {
+    const n = new Date();
+    const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const bln = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const p = x => String(x).padStart(2, '0');
+    document.getElementById('digital-day').innerText = hari[n.getDay()] + ',';
+    document.getElementById('digital-date').innerText = `${n.getDate()} ${bln[n.getMonth()]} ${n.getFullYear()}`;
+    document.getElementById('digital-clock').innerText = `${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+    const o = -n.getTimezoneOffset() / 60;
+    const z = o === 7 ? 'WIB • ' : o === 8 ? 'WITA • ' : o === 9 ? 'WIT • ' : '';
+    document.getElementById('digital-tz').innerText = `${z}GMT${o >= 0 ? '+' : '-'}${Math.abs(o)}`;
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  // ---------- DATA ----------
+  const num = v => (v === null || v === undefined) ? null : Number(v);
+
+  function toValues(row) {
+    return {
+      tanah: num(row.tanah), mq: num(row.mq135), ldr: num(row.ldr),
+      relay: row.relay === null || row.relay === undefined ? null : (row.relay ? 1 : 0),
+      kering: row.tanah_kering, tercemar: row.udara_tercemar
+    };
+  }
+
+  function setStatus(el, text, cls) {
+    const e = document.getElementById(el);
+    e.innerText = text;
+    e.className = `text-xs font-semibold mt-0.5 ${cls}`;
+  }
+
+  function animateValue(id, start, end, dur, dec) {
+    const o = document.getElementById(id); let t0 = null;
+    const step = t => {
+      if (!t0) t0 = t;
+      const k = Math.min((t - t0) / dur, 1), v = start + k * (end - start);
+      o.innerText = v.toFixed(dec);
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function renderCards(v) {
+    ['tanah', 'mq', 'ldr'].forEach(k => {
+      const el = document.getElementById(k), bar = document.getElementById(k + '-bar');
+      if (v[k] === null) { el.innerText = '--'; bar.style.width = '0%'; return; }
+      animateValue(k, parseFloat(el.innerText) || 0, v[k], 800, CARD_META[k].dec);
+      bar.style.width = Math.max(0, Math.min(CARD_META[k].bar(v[k]), 100)) + '%';
+    });
+
+    if (v.kering === null || v.kering === undefined) setStatus('tanah-status', 'Status: --', 'text-slate-400');
+    else if (v.kering) setStatus('tanah-status', 'Status: KERING 🏜️', 'text-orange-400');
+    else setStatus('tanah-status', 'Status: BASAH 💧', 'text-emerald-400');
+
+    if (v.tercemar === null || v.tercemar === undefined) setStatus('mq-status', 'Status: --', 'text-slate-400');
+    else if (v.tercemar) setStatus('mq-status', 'Status: TERCEMAR! ⚠️', 'text-red-400');
+    else setStatus('mq-status', 'Status: BERSIH ✅', 'text-emerald-400');
+
+    if (v.ldr === null) setStatus('ldr-status', 'Status: --', 'text-slate-400');
+    else if (v.ldr > 1800) setStatus('ldr-status', 'Status: GELAP 🌙', 'text-indigo-300');
+    else if (v.ldr < 1000) setStatus('ldr-status', 'Status: TERANG ☀️', 'text-amber-300');
+    else setStatus('ldr-status', 'Status: REDUP 🌤️', 'text-slate-300');
+
+    const r = document.getElementById('relay');
+    if (v.relay === null) { r.innerText = '--'; setStatus('relay-status', 'Status: --', 'text-slate-400'); }
+    else {
+      r.innerText = v.relay ? 'ON' : 'OFF';
+      setStatus('relay-status', v.relay ? 'Lampu menyala (gelap)' : 'Lampu mati (terang)', v.relay ? 'text-purple-300' : 'text-slate-400');
+    }
+    document.getElementById('relay-bar').style.width = v.relay ? '100%' : '0%';
+  }
+
+  function addHistory(row) {
+    const v = toValues(row);
+    history.labels.push(new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    KEYS.forEach(k => history[k].push(v[k]));
+    if (history.labels.length > MAX_POINTS) { history.labels.shift(); KEYS.forEach(k => history[k].shift()); }
+  }
+
+  // ---------- GRAFIK ----------
+  function refreshChart() {
+    if (!liveChart) return;
+    liveChart.data.labels = [...history.labels];
+    liveChart.data.datasets[0].data = [...history[activeMetric]];
+    liveChart.update('none');
+  }
+
+  function selectMetric(m) {
+    if (!chartConfig[m]) return;
+    activeMetric = m;
+    document.querySelectorAll('.metric-btn').forEach(b => b.className = 'metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200');
+    document.getElementById('btn-' + m).className = 'metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-500 text-slate-950';
+    document.querySelectorAll('.glass-card').forEach(c => c.classList.remove('card-active'));
+    document.getElementById('card-' + m).classList.add('card-active');
+    if (!liveChart) return;
+    const c = chartConfig[m], d = liveChart.data.datasets[0], isRelay = m === 'relay';
+    d.label = c.label; d.borderColor = c.color; d.backgroundColor = c.bg; d.pointBackgroundColor = c.color;
+    d.stepped = isRelay;
+    liveChart.options.scales.y.min = isRelay ? -0.1 : undefined;
+    liveChart.options.scales.y.max = isRelay ? 1.1 : undefined;
+    liveChart.options.scales.y.ticks.callback = isRelay
+      ? v => (v === 0 ? 'OFF' : v === 1 ? 'ON' : '') : v => v;
+    refreshChart();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    liveChart = new Chart(document.getElementById('liveChart').getContext('2d'), {
+      type: 'line',
+      data: { labels: [], datasets: [{
+        label: chartConfig.tanah.label, data: [], borderColor: chartConfig.tanah.color,
+        backgroundColor: chartConfig.tanah.bg, borderWidth: 2.5, fill: true, tension: 0.4,
+        pointRadius: 4, pointBackgroundColor: chartConfig.tanah.color }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', weight: '600' } } } },
+        scales: {
+          x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,.05)' } },
+          y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,.05)' } }
+        }
+      }
+    });
+  });
+
+  // ---------- STATUS ----------
+  function updateStatusPill() {
+    const dot = document.getElementById('status-dot'), txt = document.getElementById('status-text');
+    if (!lastDataTime) { txt.innerText = 'Menunggu data ESP32 #2...'; return; }
+    const age = Date.now() - lastDataTime;
+    const jam = new Date(lastDataTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    if (age <= LIVE_AFTER) { dot.className = 'w-2 h-2 rounded-full bg-cyan-400 animate-pulse'; txt.innerText = `ESP32 #2 LIVE • ${jam}`; }
+    else if (age <= OFFLINE_AFTER) { dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse'; txt.innerText = `ESP32 #2 MENUNGGU DATA • terakhir ${jam}`; }
+    else { dot.className = 'w-2 h-2 rounded-full bg-red-500'; txt.innerText = `ESP32 #2 OFFLINE • terakhir ${jam}`; }
+  }
+  function setStatusTime(t) { lastDataTime = new Date(t).getTime(); updateStatusPill(); }
+
+  // ---------- SUPABASE ----------
+  async function loadHistory() {
+    const { data, error } = await db.from(TABLE_NAME).select('*').order('created_at', { ascending: false }).limit(MAX_POINTS);
+    if (error) throw error;
+    history.labels = []; KEYS.forEach(k => history[k] = []);
+    if (data.length) {
+      data.reverse().forEach(addHistory);
+      const last = data[data.length - 1];
+      renderCards(toValues(last));
+      setStatusTime(last.created_at);
+    }
+    refreshChart();
+  }
+
+  async function cekDataTerbaru() {
+    try {
+      const { data } = await db.from(TABLE_NAME).select('created_at').order('created_at', { ascending: false }).limit(1);
+      if (data && data.length && new Date(data[0].created_at).getTime() > lastDataTime) await loadHistory();
+    } catch (e) { console.error(e); }
+  }
+
+  function startRealtime() {
+    db.channel('sensor-live-2')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE_NAME }, p => {
+        addHistory(p.new); renderCards(toValues(p.new)); refreshChart(); setStatusTime(p.new.created_at);
+      })
+      .subscribe(s => console.log('Realtime Supabase:', s));
+  }
+
+  async function manualSync() {
+    const b = document.getElementById('btn-sync'), t = document.getElementById('sync-text'), i = document.getElementById('sync-icon');
+    b.disabled = true; i.classList.add('animate-spin'); t.innerText = 'Syncing...';
+    try { await loadHistory(); t.innerText = 'Updated!'; }
+    catch (e) { console.error(e); t.innerText = 'Failed!'; }
+    setTimeout(() => { i.classList.remove('animate-spin'); t.innerText = 'Sync Data'; b.disabled = false; }, 1500);
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    try { await loadHistory(); }
+    catch (e) { console.error(e); document.getElementById('status-text').innerText = 'Gagal terhubung ke Supabase'; }
+    startRealtime();
+    setInterval(updateStatusPill, 5000);
+    setInterval(cekDataTerbaru, 15000);
+  });
+</script>
+</body>
+</html>

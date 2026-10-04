@@ -356,8 +356,25 @@ html {
 
     <div class="px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2 whitespace-nowrap">
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span>ESP32 LIVE</span>
+            <span>ESP32 LIVE</span>
     </div>
+
+    <!-- TOMBOL HAMBURGER (hanya tampil di HP) -->
+    <button id="mobile-menu-btn" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="mobile-menu"
+      class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition">
+      <svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <!-- MENU NAVIGASI KHUSUS HP -->
+  <div id="mobile-menu" class="hidden md:hidden w-full flex-col gap-1 bg-slate-800/60 p-2 rounded-xl border border-slate-700/50 text-sm font-medium">
+    <a href="#dashboard" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Dashboard</a>
+    <a href="#info-sensor" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Info Sensor</a>
+    <a href="#galeri" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Galeri</a>
+    <div class="px-4 pt-2 pb-1 text-xs uppercase tracking-wider text-slate-500">Pusat Kontrol</div>
+    <a href="GRAFIK_1.1.html" target="_blank" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">📡 Menara Data 1</a>
+    <a href="GRAFIK_2.html" target="_blank" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">📡 Menara Data 2</a>
   </div>
 
 </header>
@@ -792,4 +809,35 @@ html {
     });
   </script>
 </body>
+
+<script>
+  // Buka/tutup menu navigasi HP
+  (function () {
+    var btn = document.getElementById('mobile-menu-btn');
+    var menu = document.getElementById('mobile-menu');
+    var iOpen = document.getElementById('icon-open');
+    var iClose = document.getElementById('icon-close');
+    if (!btn || !menu) return;
+
+    function setOpen(open) {
+      menu.classList.toggle('hidden', !open);
+      menu.classList.toggle('flex', open);
+      iOpen.classList.toggle('hidden', open);
+      iClose.classList.toggle('hidden', !open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    btn.addEventListener('click', function () {
+      setOpen(menu.classList.contains('hidden'));
+    });
+
+    menu.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { setOpen(false); });
+    });
+
+    window.addEventListener('resize', function () {
+      if (window.innerWidth >= 768) setOpen(false);
+    });
+  })();
+</script>
 </html>

@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
   <!-- Chart.js & Anime.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
   
   <style>
@@ -19,7 +20,7 @@ html {
 }
 
 /* Supaya saat di-scroll, judul tidak tertutup oleh navbar fixed */
-#dashboard, #info-sensor, #galeri {
+#dashboard, #Hasil-AWS, #info-sensor, #galeri {
   scroll-margin-top: 100px;
 }
 /* ===== JUDUL ESTETIK (tengah) ===== */
@@ -308,21 +309,22 @@ html {
 <!-- HEADER UTAMA -->
 <header class="flex flex-wrap items-center justify-between gap-4 py-4 px-6 bg-slate-900/80 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md mb-8">
 
-  <!-- KIRI: LOGO + JUDUL -->
+    <!-- KIRI: LOGO ECOCITY + JUDUL -->
   <div class="flex items-center gap-3 shrink-0">
-    <div class="w-11 h-11 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/30 overflow-hidden">
-      <!-- GANTI LOGO: ubah "logo.png" dengan nama file logo Anda -->
-      <img src="logo.png" alt="Logo Sekolah" class="w-full h-full object-contain p-1">
-    </div>
-    <div>
-      <h1 class="text-lg font-bold text-white tracking-wide leading-tight whitespace-nowrap">AWS EcoSkola</h1>
-      <p class="text-xs text-slate-400 whitespace-nowrap">Interactive Weather Station V2.0</p>
+    <!-- Logo ecoCity (lebar, jadi tidak pakai kotak kecil) -->
+    <a href="#dashboard" class="shrink-0 flex items-center bg-white/90 rounded-xl px-2 py-1 shadow-lg shadow-cyan-500/10">
+      <img src="logo.png" alt="Logo ecoCity" class="h-10 md:h-12 w-auto object-contain">
+    </a>
+    <div class="hidden sm:block">
+      <h1 class="text-lg font-bold text-white tracking-wide leading-tight whitespace-nowrap">AWS ecoCity</h1>
+      <p class="text-xs text-slate-400 whitespace-nowrap">Interactive Weather Station V1.0</p>
     </div>
   </div>
 
   <!-- TENGAH: MENU NAVIGASI -->
   <nav class="hidden md:flex items-center gap-1 bg-slate-800/60 p-1.5 rounded-xl border border-slate-700/50 text-sm font-medium">
     <a href="#dashboard" class="px-4 py-2 rounded-lg whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Dashboard</a>
+    <a href="#Hasil-AWS" class="px-4 py-2 rounded-lg whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Hasil AWS</a>
     <a href="#info-sensor" class="px-4 py-2 rounded-lg whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Info Sensor</a>
     <a href="#galeri" class="px-4 py-2 rounded-lg whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Galeri</a>
 
@@ -370,6 +372,7 @@ html {
   <!-- MENU NAVIGASI KHUSUS HP -->
   <div id="mobile-menu" class="hidden md:hidden w-full flex-col gap-1 bg-slate-800/60 p-2 rounded-xl border border-slate-700/50 text-sm font-medium">
     <a href="#dashboard" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Dashboard</a>
+    <a href="#Hasil-AWS" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Hasil AWS</a>
     <a href="#info-sensor" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Info Sensor</a>
     <a href="#galeri" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Galeri</a>
     <div class="px-4 pt-2 pb-1 text-xs uppercase tracking-wider text-slate-500">Pusat Kontrol</div>
@@ -412,7 +415,328 @@ html {
 
   </div>
 </div>
-    </main>
+
+<!-- ========== LAPORAN DATA AWS 1 + AWS 2 ========== -->
+<section id="Hasil-AWS" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
+
+  <div class="judul-wrap">
+    <div class="judul-ikon">📊</div>
+    <h3 class="judul-estetik">Laporan Data AWS</h3>
+    <div class="judul-hias"><span></span></div>
+    <p class="subjudul-estetik">Gabungan AWS CONTROLER • Rata-rata &amp; data live</p>
+  </div>
+
+  <!-- STATUS -->
+  <div class="flex flex-wrap items-center justify-between gap-2 mb-4 text-xs">
+    <span id="rpt-status" class="px-3 py-1 rounded-full text-xs font-semibold border bg-slate-800 border-slate-700 text-slate-400">MENGHUBUNGKAN...</span>
+    <div class="text-slate-500 text-right">
+      <div id="rpt-updated">Data terakhir: —</div>
+      <div id="rpt-since">Belum ada data</div>
+    </div>
+  </div>
+
+  <!-- MENU PERIODE + EXPORT -->
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div class="flex flex-wrap items-center gap-1 bg-slate-800/60 p-1 rounded-xl border border-slate-700/50">
+      <button type="button" data-p="hour"  class="rpt-period">Per Jam</button>
+      <button type="button" data-p="day"   class="rpt-period">Per Hari</button>
+      <button type="button" data-p="month" class="rpt-period">Per Bulan</button>
+    </div>
+    <div class="flex items-center gap-3">
+      <span id="rpt-period-title" class="text-sm font-semibold text-cyan-300"></span>
+      <button id="rpt-export" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-400/50 text-slate-300 hover:text-white transition">⬇ Export CSV</button>
+    </div>
+  </div>
+
+  <!-- 12 KARTU SENSOR (diisi otomatis oleh script) -->
+  <div id="rpt-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+  <style>
+    .rpt-period{padding:.375rem 1rem;border-radius:.5rem;font-size:.75rem;font-weight:600;color:#94a3b8;transition:all .2s}
+  </style>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ================= KONFIGURASI =================
+    var CFG = {
+      url: 'https://rzaptntesoseztxhmnwh.supabase.co',
+      key: 'sb_publishable_dlaYMSuis-XK4EQ-wnOaJg_dvKkGBdv',
+      offlineAfter: 180000,   // 3 menit tanpa data = stasiun dianggap offline
+      refreshStats: 60000,    // hitung ulang rata-rata tiap 1 menit
+      pageSize: 1000,
+      maxRows: 20000          // batas baris per tabel (rata-rata & export)
+    };
+    var ADC_MAX = 4095;
+
+    // ================= 12 KARTU SENSOR =================
+    // st = stasiun asal, csv = judul kolom saat export
+    var CARDS = [
+      { st: 'aws1', k: 'temp',  icon: '🌡️', label: 'Suhu Udara',        unit: '°C',  dec: 1, color: 'text-orange-400',  csv: 'Suhu (C)' },
+      { st: 'aws1', k: 'hum',   icon: '💧', label: 'Kelembapan',        unit: '%',   dec: 1, color: 'text-sky-400',     csv: 'Kelembapan (%)' },
+      { st: 'aws1', k: 'light', icon: '☀️', label: 'Intensitas LDR',    unit: 'ADC', dec: 0, color: 'text-yellow-400',  csv: 'LDR AWS1 (ADC)' },
+      { st: 'aws1', k: 'fire',  icon: '🔥', label: 'Sensor Api',        unit: 'ADC', dec: 0, color: 'text-orange-500',  csv: 'Api (ADC)' },
+      { st: 'aws1', k: 'dist',  icon: '📏', label: 'Jarak Ultrasonik',  unit: 'cm',  dec: 1, color: 'text-purple-400',  csv: 'Jarak (cm)' },
+      { st: 'aws1', k: 'rain',  icon: '🌧️', label: 'Intensitas Hujan',  unit: '%',   dec: 0, color: 'text-blue-400',    csv: 'Hujan (%)' },
+      { st: 'aws1', k: 'uv',    icon: '🔆', label: 'UV Index',          unit: 'idx', dec: 1, color: 'text-pink-400',    csv: 'UV Index' },
+      { st: 'aws1', k: 'pres',  icon: '🧭', label: 'Tekanan Udara',     unit: 'hPa', dec: 1, color: 'text-emerald-400', csv: 'Tekanan (hPa)' },
+      { st: 'aws2', k: 'soil',  icon: '🌱', label: 'Kelembaban Tanah',  unit: '%',   dec: 0, color: 'text-teal-400',    csv: 'Tanah (%)' },
+      { st: 'aws2', k: 'air',   icon: '🌫️', label: 'Kualitas Udara',    unit: 'ADC', dec: 0, color: 'text-orange-300',  csv: 'Udara MQ135 (ADC)' },
+      { st: 'aws2', k: 'ldr2',  icon: '☀️', label: 'Intensitas LDR',    unit: 'ADC', dec: 0, color: 'text-amber-400',   csv: 'LDR AWS2 (ADC)' },
+      { st: 'aws2', k: 'relay', icon: '💡', label: 'Lampu (Relay)',     unit: '',    dec: 0, color: 'text-fuchsia-400', csv: 'Relay (1=ON 0=OFF)' }
+    ];
+    var IDS = ['aws1', 'aws2'];
+    var KEYS_OF = {};
+    IDS.forEach(function (id) {
+      KEYS_OF[id] = CARDS.filter(function (c) { return c.st === id; }).map(function (c) { return c.k; });
+    });
+
+    // ================= PEMETAAN TABEL SUPABASE =================
+    var num = function (v) { return (v === null || v === undefined || v === '') ? null : Number(v); };
+    var STATION = {
+      aws1: {
+        table: 'sensor_data',
+        cols: 'created_at,suhu,kelembapan,cahaya,api,jarak,hujan,uv_index,tekanan',
+        conv: function (r) {
+          var h = num(r.hujan), j = num(r.jarak);
+          return {
+            temp: num(r.suhu), hum: num(r.kelembapan), light: num(r.cahaya), fire: num(r.api),
+            dist: (j === null || j < 0) ? null : j,
+            rain: h === null ? null : Math.max(0, Math.min(100, (ADC_MAX - h) / ADC_MAX * 100)),
+            uv: num(r.uv_index), pres: num(r.tekanan)
+          };
+        }
+      },
+      aws2: {
+        table: 'sensor_data_2',
+        cols: 'created_at,tanah,mq135,ldr,relay',
+        conv: function (r) {
+          return {
+            soil: num(r.tanah), air: num(r.mq135), ldr2: num(r.ldr),
+            relay: (r.relay === null || r.relay === undefined) ? null : (r.relay ? 1 : 0)
+          };
+        }
+      }
+    };
+
+    var PERIODS = {
+      hour:  { ms: 3600000,       title: 'Rata-rata 1 jam terakhir',  short: '1 jam' },
+      day:   { ms: 86400000,      title: 'Rata-rata 24 jam terakhir', short: '24 jam' },
+      month: { ms: 30 * 86400000, title: 'Rata-rata 30 hari terakhir', short: '30 hari' }
+    };
+
+    // ================= STATE =================
+    var $ = function (id) { return document.getElementById(id); };
+    var fmt = function (v, d) { return (v === null || v === undefined || isNaN(v)) ? '—' : Number(v).toFixed(d); };
+    var sb = window.supabase.createClient(CFG.url, CFG.key);
+    var period = 'hour';
+    var firstTime = null;
+    var S = {};
+    IDS.forEach(function (id) { S[id] = { last: null, time: 0, n: {}, s: {} }; resetSums(S[id], id); });
+
+    function resetSums(obj, id) {
+      KEYS_OF[id].forEach(function (k) { obj.n[k] = 0; obj.s[k] = 0; });
+    }
+
+    // ================= BUAT KARTU =================
+    $('rpt-cards').innerHTML = CARDS.map(function (c) {
+      var badge = c.st === 'aws1' ? 'AWS 1' : 'AWS 2';
+      return '<div id="rpt-card-' + c.k + '" class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 transition-opacity">' +
+        '<div class="flex items-center justify-between mb-1">' +
+          '<div class="text-xs font-semibold ' + c.color + '">' + c.icon + ' ' + c.label + '</div>' +
+          '<span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-slate-400">' + badge + '</span>' +
+        '</div>' +
+        '<div class="text-2xl md:text-3xl font-bold text-white"><span id="rpt-v-' + c.k + '">--</span>' +
+          '<span class="text-sm text-slate-400 ml-1">' + c.unit + '</span></div>' +
+        '<div class="text-[11px] text-slate-400 mt-2">' +
+          '<span class="rpt-avg-label">Rata²</span>: <b id="rpt-avg-' + c.k + '" class="text-cyan-300">—</b>' +
+        '</div></div>';
+    }).join('');
+
+    // ================= RENDER =================
+    function render() {
+      var now = Date.now(), online = {};
+      IDS.forEach(function (id) { online[id] = !!S[id].last && (now - S[id].time) <= CFG.offlineAfter; });
+
+      CARDS.forEach(function (c) {
+        var st = S[c.st];
+        var live = st.last ? st.last[c.k] : null;
+        var avg = st.n[c.k] ? st.s[c.k] / st.n[c.k] : null;
+
+        if (c.k === 'relay') {
+          $('rpt-v-relay').textContent = live === null ? '--' : (live ? 'ON' : 'OFF');
+          $('rpt-avg-relay').textContent = avg === null ? '—' : fmt(avg * 100, 0) + '% menyala';
+        } else {
+          $('rpt-v-' + c.k).textContent = fmt(live, c.dec);
+          $('rpt-avg-' + c.k).textContent = fmt(avg, c.dec) + (avg === null ? '' : ' ' + c.unit);
+        }
+        $('rpt-card-' + c.k).style.opacity = online[c.st] ? '1' : '0.55';
+      });
+
+      var el = $('rpt-status'), base = 'px-3 py-1 rounded-full text-xs font-semibold border ';
+      if (online.aws1 && online.aws2) {
+        el.textContent = 'AWS 1 & 2 LIVE';
+        el.className = base + 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
+      } else if (online.aws1 || online.aws2) {
+        el.textContent = online.aws1 ? 'AWS 1 LIVE • AWS 2 OFFLINE' : 'AWS 2 LIVE • AWS 1 OFFLINE';
+        el.className = base + 'bg-amber-500/10 border-amber-500/30 text-amber-400';
+      } else {
+        el.textContent = 'AWS CONTROL OFFLINE';
+        el.className = base + 'bg-red-500/10 border-red-500/30 text-red-400';
+      }
+
+      var latest = Math.max(S.aws1.time, S.aws2.time);
+      $('rpt-updated').textContent = latest ? 'Data terakhir: ' + new Date(latest).toLocaleTimeString('id-ID') : 'Data terakhir: —';
+      $('rpt-since').textContent = firstTime ? 'Data pertama: ' + new Date(firstTime).toLocaleString('id-ID') : 'Belum ada data';
+    }
+
+    // ================= AMBIL DATA SUPABASE =================
+    function sinceISO() { return new Date(Date.now() - PERIODS[period].ms).toISOString(); }
+
+    function addRow(id, row, countIt) {
+      var v = STATION[id].conv(row);
+      var t = new Date(row.created_at).getTime();
+      if (t >= S[id].time) { S[id].last = v; S[id].time = t; }
+      if (countIt) {
+        KEYS_OF[id].forEach(function (k) {
+          if (v[k] !== null && v[k] !== undefined) { S[id].n[k]++; S[id].s[k] += v[k]; }
+        });
+      }
+    }
+
+    // Ambil semua baris sebuah stasiun sejak waktu tertentu (per halaman 1000)
+    async function fetchAll(id, since) {
+      var m = STATION[id], from = 0, out = [];
+      while (from < CFG.maxRows) {
+        var q = sb.from(m.table).select(m.cols).order('created_at', { ascending: false }).range(from, from + CFG.pageSize - 1);
+        if (since) q = q.gte('created_at', since);
+        var r = await q;
+        if (r.error) { console.error('Supabase ' + m.table + ':', r.error); break; }
+        out = out.concat(r.data);
+        if (r.data.length < CFG.pageSize) break;
+        from += CFG.pageSize;
+      }
+      return out;
+    }
+
+    // Data terbaru tiap stasiun + data pertama
+    async function loadLatest() {
+      for (var i = 0; i < IDS.length; i++) {
+        var id = IDS[i], m = STATION[id];
+        var r = await sb.from(m.table).select(m.cols).order('created_at', { ascending: false }).limit(1);
+        if (!r.error && r.data && r.data.length) addRow(id, r.data[0], false);
+        var f = await sb.from(m.table).select('created_at').order('created_at', { ascending: true }).limit(1);
+        if (!f.error && f.data && f.data.length) {
+          var t = new Date(f.data[0].created_at).getTime();
+          if (!firstTime || t < firstTime) firstTime = t;
+        }
+      }
+    }
+
+    // Hitung rata-rata sesuai periode terpilih
+    async function loadStats() {
+      var since = sinceISO(), myPeriod = period;
+      for (var i = 0; i < IDS.length; i++) {
+        var id = IDS[i], rows = await fetchAll(id, since);
+        if (myPeriod !== period) return;   // periode diganti saat loading, batalkan
+        var tmp = { n: {}, s: {} };
+        resetSums(tmp, id);
+        rows.forEach(function (row) {
+          var v = STATION[id].conv(row);
+          KEYS_OF[id].forEach(function (k) {
+            if (v[k] !== null && v[k] !== undefined) { tmp.n[k]++; tmp.s[k] += v[k]; }
+          });
+        });
+        S[id].n = tmp.n; S[id].s = tmp.s;
+      }
+      render();
+    }
+
+    // ================= EXPORT CSV =================
+    async function exportCSV() {
+      var btn = $('rpt-export'), old = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Menyiapkan...';
+      try {
+        var since = sinceISO(), all = [];
+        for (var i = 0; i < IDS.length; i++) {
+          var id = IDS[i], rows = await fetchAll(id, since);
+          rows.forEach(function (row) {
+            all.push({ t: new Date(row.created_at).getTime(), id: id, v: STATION[id].conv(row) });
+          });
+        }
+        all.sort(function (a, b) { return b.t - a.t; });
+
+        var head = ['Waktu', 'Stasiun'].concat(CARDS.map(function (c) { return c.csv; }));
+        var lines = [head.join(',')];
+        all.forEach(function (r) {
+          var cells = [new Date(r.t).toLocaleString('sv-SE'), r.id === 'aws1' ? 'AWS 1' : 'AWS 2'];
+          CARDS.forEach(function (c) {
+            var v = r.id === c.st ? r.v[c.k] : null;
+            cells.push((v === null || v === undefined) ? '' : (c.k === 'relay' ? v : Number(v).toFixed(c.dec)));
+          });
+          lines.push(cells.join(','));
+        });
+
+        var blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'data-aws-' + period + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+        btn.textContent = all.length ? '✔ ' + all.length + ' baris' : 'Tidak ada data';
+      } catch (e) {
+        console.error(e); btn.textContent = 'Gagal export';
+      }
+      setTimeout(function () { btn.textContent = old; btn.disabled = false; }, 2000);
+    }
+
+    // ================= REALTIME =================
+    function startRealtime() {
+      IDS.forEach(function (id) {
+        sb.channel('rpt-' + id)
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: STATION[id].table }, function (p) {
+            addRow(id, p.new, true);
+            var t = new Date(p.new.created_at).getTime();
+            if (!firstTime || t < firstTime) firstTime = t;
+            render();
+          })
+          .subscribe();
+      });
+    }
+
+    // ================= MENU PERIODE =================
+    function setPeriod(p) {
+      period = p;
+      document.querySelectorAll('.rpt-period').forEach(function (b) {
+        var on = b.dataset.p === p;
+        b.style.background = on ? '#06b6d4' : 'transparent';
+        b.style.color = on ? '#020617' : '#94a3b8';
+      });
+      $('rpt-period-title').textContent = PERIODS[p].title;
+      document.querySelectorAll('.rpt-avg-label').forEach(function (el) {
+        el.textContent = 'Rata² ' + PERIODS[p].short;
+      });
+      loadStats();
+    }
+
+    document.querySelectorAll('.rpt-period').forEach(function (b) {
+      b.addEventListener('click', function () { setPeriod(b.dataset.p); });
+    });
+    $('rpt-export').addEventListener('click', exportCSV);
+
+    // ================= JALANKAN =================
+    (async function init() {
+      try { await loadLatest(); } catch (e) { console.error(e); }
+      setPeriod('hour');
+      startRealtime();
+      setInterval(loadStats, CFG.refreshStats);
+      setInterval(render, 5000);   // cek status online/offline
+    })();
+  })();
+  </script>
+</section>
+<!-- ========== AKHIR LAPORAN DATA AWS ========== -->
 
     <!-- Penjelasan sensor  -->
 <section id="info-sensor" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
@@ -568,6 +892,7 @@ html {
       <h3 class="text-cyan-400 font-extrabold text-lg mb-3 tracking-wide">Menu Utama</h3>
       <ul class="space-y-2.5 text-xs font-medium">
         <li><a href="#dashboard" class="text-slate-400 hover:text-cyan-300 transition">Dashboard</a></li>
+        <li><a href="#Hasil-AWS" class="text-slate-400 hover:text-cyan-300 transition">Hasil AWS</a></li>
         <li><a href="#info-sensor" class="text-slate-400 hover:text-cyan-300 transition">Info Sensor</a></li>
         <li><a href="#galeri" class="text-slate-400 hover:text-cyan-300 transition">Galeri</a></li>
         <li>

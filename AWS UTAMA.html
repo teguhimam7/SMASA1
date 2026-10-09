@@ -13,6 +13,13 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "@google/genai": "https://esm.run/@google/genai"
+    }
+  }
+</script>
   
   <style>
 html {
@@ -267,7 +274,7 @@ html {
         <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-300 via-sky-200 to-blue-500 bg-clip-text text-transparent mb-2">
           AWS EcoSkola
         </h1>
-        <p class="text-slate-400 text-xs md:text-sm font-medium">SMA Darul Ulum 1 Unggulan BPPT</p>
+        <p class="text-slate-400 text-xs md:text-sm font-medium">SMA Darul Ulum 1 Unggulan Peterongan</p>
       </div>
 
       <!-- CLOUD & RAIN LOADING SCREEN COMPONENT -->
@@ -415,6 +422,43 @@ html {
 
   </div>
 </div>
+
+<!-- ========== ASISTEN CUACA AI (ECOS) ========== -->
+<section id="ai-assistant" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
+  
+  <!-- Header / Identitas Ecos -->
+  <div class="flex flex-col items-center justify-center text-center mb-6">
+    <div class="flex items-center gap-2 mb-2">
+      <!-- Logo Awan / Ecos -->
+      <svg class="w-8 h-8 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 001-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"/>
+      </svg>
+      <span class="text-xl font-bold text-white tracking-wide">Ecos</span>
+      <span class="text-[10px] text-slate-400 self-end mb-1">By Google AI Studio</span>
+    </div>
+    <h3 class="text-lg md:text-xl font-medium text-slate-200">
+      Hai, mau bahas atau bikin apa nih kita sekarang?
+    </h3>
+  </div>
+
+  <!-- Area Jawaban / Output AI -->
+  <div id="ai-response-box" class="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 text-sm text-slate-300 min-h-[100px] mb-4 leading-relaxed whitespace-pre-line">
+    Klik tombol atau ketik pertanyaan di bawah untuk meminta analisis kondisi lingkungan sekolah saat ini.
+  </div>
+
+  <!-- Form Input Berbentuk Capsule (Sesuai Desain Ecos) -->
+  <div class="relative max-w-2xl mx-auto w-full">
+    <input type="text" id="ai-prompt-input" 
+      placeholder="Tanyakan sesuatu tentang data cuaca..." 
+      class="w-full bg-slate-900/90 border border-slate-700/80 rounded-full px-6 py-3.5 pr-28 text-sm text-white focus:outline-none focus:border-cyan-400 shadow-inner">
+    
+    <button id="btn-ask-ai" type="button" onclick="askGeminiAI()" 
+      class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 shadow-md">
+      <span>✨ Analisis</span>
+    </button>
+  </div>
+
+</section>
 
 <!-- ========== LAPORAN DATA AWS 1 + AWS 2 ========== -->
 <section id="Hasil-AWS" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
@@ -738,6 +782,7 @@ html {
 </section>
 <!-- ========== AKHIR LAPORAN DATA AWS ========== -->
 
+
     <!-- Penjelasan sensor  -->
 <section id="info-sensor" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
   <div class="judul-wrap">
@@ -796,9 +841,6 @@ html {
       <p class="text-sm text-slate-300">Mengukur tingkat radiasi ultraviolet dari sinar matahari untuk memantau bahaya paparan UV harian.</p>
     </div>
 
-    <!-- 8. Sensor UV (GUVA-S12SD) -->
-    <!-- 8. Sensor UV (GUVA-S12SD) -->
-    <!-- 8. Sensor UV (GUVA-S12SD) -->
   </div>
 </section>
 
@@ -1055,74 +1097,74 @@ html {
 
     let storedData = { temperature: 27.5, humidity: 62.0, light: 750, air_quality: 380 };
 
-    async function fetchData() {
-      try {
-        const response = await fetch('/api/data');
-        if (response.ok) {
-          storedData = await response.json();
-        }
-      } catch (err) {
-        // Fallback Simulasi Interaktif jika dibuka tanpa ESP32
-        storedData = {
-          temperature: +(25 + Math.random() * 6).toFixed(1),
-          humidity: +(55 + Math.random() * 20).toFixed(1),
-          light: Math.floor(400 + Math.random() * 500),
-          air_quality: Math.floor(300 + Math.random() * 200)
-        };
-      }
+    // async function fetchData() {
+    //   try {
+    //     const response = await fetch('/api/data');
+    //     if (response.ok) {
+    //       storedData = await response.json();
+    //     }
+    //   } catch (err) {
+    //     // Fallback Simulasi Interaktif jika dibuka tanpa ESP32
+    //     storedData = {
+    //       temperature: +(25 + Math.random() * 6).toFixed(1),
+    //       humidity: +(55 + Math.random() * 20).toFixed(1),
+    //       light: Math.floor(400 + Math.random() * 500),
+    //       air_quality: Math.floor(300 + Math.random() * 200)
+    //     };
+    //   }
 
-      // Trigger Animasi Angka
-      animateValue('temp', parseFloat(document.getElementById('temp').innerText), storedData.temperature, 800);
-      animateValue('hum', parseFloat(document.getElementById('hum').innerText), storedData.humidity, 800);
-      animateValue('light', parseInt(document.getElementById('light').innerText), storedData.light, 800);
-      animateValue('aqi', parseInt(document.getElementById('aqi').innerText), storedData.air_quality, 800);
+    //   // Trigger Animasi Angka
+    //   animateValue('temp', parseFloat(document.getElementById('temp').innerText), storedData.temperature, 800);
+    //   animateValue('hum', parseFloat(document.getElementById('hum').innerText), storedData.humidity, 800);
+    //   animateValue('light', parseInt(document.getElementById('light').innerText), storedData.light, 800);
+    //   animateValue('aqi', parseInt(document.getElementById('aqi').innerText), storedData.air_quality, 800);
 
-      // Update Progress Bars
-      document.getElementById('temp-bar').style.width = `${Math.min((storedData.temperature / 50) * 100, 100)}%`;
-      document.getElementById('hum-bar').style.width = `${Math.min(storedData.humidity, 100)}%`;
-      document.getElementById('light-bar').style.width = `${Math.min((storedData.light / 1024) * 100, 100)}%`;
-      document.getElementById('aqi-bar').style.width = `${Math.min((storedData.air_quality / 1000) * 100, 100)}%`;
+    //   // Update Progress Bars
+    //   document.getElementById('temp-bar').style.width = `${Math.min((storedData.temperature / 50) * 100, 100)}%`;
+    //   document.getElementById('hum-bar').style.width = `${Math.min(storedData.humidity, 100)}%`;
+    //   document.getElementById('light-bar').style.width = `${Math.min((storedData.light / 1024) * 100, 100)}%`;
+    //   document.getElementById('aqi-bar').style.width = `${Math.min((storedData.air_quality / 1000) * 100, 100)}%`;
 
-      // Status Udara Dynamic Text
-      const aqiStatus = document.getElementById('aqi-status');
-      if (storedData.air_quality < 450) {
-        aqiStatus.innerText = "Status: Sangat Sehat 🍃";
-        aqiStatus.className = "text-xs text-emerald-400 font-semibold mt-1";
-      } else {
-        aqiStatus.innerText = "Status: Perlu Waspada ⚠️";
-        aqiStatus.className = "text-xs text-amber-400 font-semibold mt-1";
-      }
+    //   // Status Udara Dynamic Text
+    //   const aqiStatus = document.getElementById('aqi-status');
+    //   if (storedData.air_quality < 450) {
+    //     aqiStatus.innerText = "Status: Sangat Sehat 🍃";
+    //     aqiStatus.className = "text-xs text-emerald-400 font-semibold mt-1";
+    //   } else {
+    //     aqiStatus.innerText = "Status: Perlu Waspada ⚠️";
+    //     aqiStatus.className = "text-xs text-amber-400 font-semibold mt-1";
+    //   }
 
-      // Push Data ke Chart (dengan Null-Check)
-      if (liveChart && liveChart.data && liveChart.data.labels) {
-        const timeStr = new Date().toLocaleTimeString();
-        liveChart.data.labels.push(timeStr);
-        liveChart.data.datasets[0].data.push(
-          activeMetric === 'temp' ? storedData.temperature :
-          activeMetric === 'hum' ? storedData.humidity : storedData.light
-        );
+    //   // Push Data ke Chart (dengan Null-Check)
+    //   if (liveChart && liveChart.data && liveChart.data.labels) {
+    //     const timeStr = new Date().toLocaleTimeString();
+    //     liveChart.data.labels.push(timeStr);
+    //     liveChart.data.datasets[0].data.push(
+    //       activeMetric === 'temp' ? storedData.temperature :
+    //       activeMetric === 'hum' ? storedData.humidity : storedData.light
+    //     );
 
-        if (liveChart.data.labels.length > MAX_POINTS) {
-          liveChart.data.labels.shift();
-          liveChart.data.datasets[0].data.shift();
-        }
-        liveChart.update();
-      }
-    }
+    //     if (liveChart.data.labels.length > MAX_POINTS) {
+    //       liveChart.data.labels.shift();
+    //       liveChart.data.datasets[0].data.shift();
+    //     }
+    //     liveChart.update();
+    //   }
+    // }
 
-    function manualRefresh() {
-      // Anime.js Rotasi Icon Sync Button
-      anime({
-        targets: '#refresh-icon',
-        rotate: '1turn',
-        duration: 800,
-        easing: 'easeInOutQuad'
-      });
-      fetchData();
-    }
+    // function manualRefresh() {
+    //   // Anime.js Rotasi Icon Sync Button
+    //   anime({
+    //     targets: '#refresh-icon',
+    //     rotate: '1turn',
+    //     duration: 800,
+    //     easing: 'easeInOutQuad'
+    //   });
+    //   fetchData();
+    // }
 
-    // Eksekusi otomatis tiap 2.5 detik
-    setInterval(fetchData, 2500);
+    // // Eksekusi otomatis tiap 2.5 detik
+    // setInterval(fetchData, 2500);
 
     // Animasi Muncul Pertama Kali (Entrance Animation)
     anime({
@@ -1132,7 +1174,115 @@ html {
       delay: anime.stagger(150),
       easing: 'easeOutExpo'
     });
+    
   </script>
+  <script type="module">
+  import { GoogleGenAI } from "@google/genai";
+
+  // Inisialisasi Google Gen AI dengan API Key kamu
+  const ai = new GoogleGenAI({ apiKey: "AQ.Ab8RN6L-li_W1GFtlGNQpep-Kt6MbwP5tt2BQlyBfVPIAGogZw" });
+
+  async function askGeminiAI() {
+    console.log("Memulai analisis Ecos dengan Google Gen AI SDK...");
+
+    const responseBox = document.getElementById('ai-response-box');
+    const promptInput = document.getElementById('ai-prompt-input');
+    const customPrompt = promptInput ? promptInput.value.trim() : '';
+    const btn = document.getElementById('btn-ask-ai');
+
+    if (!responseBox) return;
+
+    // Tampilkan indikator loading
+    responseBox.innerHTML = '<span class="animate-pulse text-cyan-400">🤖 Ecos sedang menganalisis data sensor stasiun cuaca... Mohon tunggu.</span>';
+    if (btn) btn.disabled = true;
+
+    // Helper aman pembaca nilai sensor
+    const getVal = (id) => {
+      const el = document.getElementById(id);
+      return el ? el.innerText : '--';
+    };
+
+    // Ambil data seluruh sensor AWS 1 & AWS 2
+    const temp  = getVal('rpt-v-temp');   
+    const hum   = getVal('rpt-v-hum');    
+    const light = getVal('rpt-v-light');  
+    const fire  = getVal('rpt-v-fire');   
+    const dist  = getVal('rpt-v-dist');   
+    const rain  = getVal('rpt-v-rain');   
+    const uv    = getVal('rpt-v-uv');     
+    const pres  = getVal('rpt-v-pres');   
+    const soil  = getVal('rpt-v-soil');   
+    const air   = getVal('rpt-v-air');    
+    const ldr2  = getVal('rpt-v-ldr2');   
+    const relay = getVal('rpt-v-relay');  
+
+    const dataContext = `
+[Data Sensor Stasiun Cuaca Real-Time AWS EcoSkola]
+• Suhu Udara: ${temp} °C
+• Kelembapan Udara: ${hum} %
+• Intensitas Cahaya (AWS1): ${light} ADC
+• Deteksi Api: ${fire} ADC
+• Jarak Ultrasonik: ${dist} cm
+• Curah Hujan: ${rain} %
+• Indeks UV: ${uv}
+• Tekanan Udara: ${pres} hPa
+• Kelembaban Tanah: ${soil} %
+• Kualitas Udara (MQ135): ${air} ADC
+• Cahaya LDR (AWS2): ${ldr2} ADC
+• Status Lampu Relay: ${relay}
+`;
+
+    const systemInstruction = `Kamu adalah Ecos, asisten AI ramah dan pintar untuk stasiun cuaca AWS EcoSkola SMA Darul Ulum 1 Unggulan BPPT Jombang.
+Tugas utama:
+1. Berikan ringkasan kondisi cuaca/lingkungan sekolah berdasarkan data sensor terkini.
+2. Berikan saran praktis, edukatif, atau tanggapan terkait aktivitas outdoor/indoor sekolah (misal: perlu bawa payung, gunakan tabir surya, kondisi tanah tanam, atau kualitas udara).
+3. Gunakan bahasa Indonesia yang ramah, sopan, ringkas (maksimal 3-5 kalimat), dan mudah dipahami oleh siswa maupun tamu sekolah.`;
+
+    const userQuery = customPrompt 
+      ? `Pertanyaan Pengguna: "${customPrompt}"\n\n${dataContext}`
+      : `Tolong berikan ringkasan kondisi lingkungan sekolah saat ini beserta saran praktisnya.\n\n${dataContext}`;
+
+    try {
+      // Panggil model menggunakan SDK resmi (menggunakan gemini-2.5-flash)
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: userQuery,
+        config: {
+          systemInstruction: systemInstruction,
+        }
+      });
+
+      if (response && response.text) {
+        responseBox.innerText = response.text;
+        if (promptInput) promptInput.value = '';
+      } else {
+        responseBox.innerText = "Maaf, Ecos tidak dapat memproses tanggapan saat ini. Silakan coba beberapa saat lagi.";
+      }
+    } catch (err) {
+      console.error("SDK Error:", err);
+      responseBox.innerText = `Gagal terhubung ke layanan AI: ${err.message || 'Periksa koneksi internet atau API Key Anda.'}`;
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  // Hubungkan event click & enter secara otomatis
+  document.addEventListener('DOMContentLoaded', () => {
+    const btnAsk = document.getElementById('btn-ask-ai');
+    if (btnAsk) {
+      btnAsk.addEventListener('click', askGeminiAI);
+    }
+
+    const inputElem = document.getElementById('ai-prompt-input');
+    if (inputElem) {
+      inputElem.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          askGeminiAI();
+        }
+      });
+    }
+  });
+</script>
 </body>
 
 <script>

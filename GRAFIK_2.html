@@ -83,7 +83,7 @@
       <h2 class="text-lg font-bold text-white">📊 Metrik Realtime Sensor ESP32 #2</h2>
       <span class="text-xs text-slate-400">Klik kartu untuk menampilkan pada grafik</span>
     </div>
-    <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
       <div onclick="selectMetric('tanah')" id="card-tanah" class="glass-card card-active rounded-3xl p-5 cursor-pointer">
         <div class="flex justify-between"><span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kelembaban Tanah</span><span class="text-2xl">🌱</span></div>
@@ -119,6 +119,18 @@
           <p id="relay-status" class="text-xs text-slate-400 font-semibold mt-0.5">Status: --</p>
         </div>
         <div class="w-full bg-slate-800/80 rounded-full h-2 p-0.5 border border-slate-700/50"><div id="relay-bar" class="bg-gradient-to-r from-purple-500 to-fuchsia-400 h-full rounded-full transition-all duration-1000" style="width:0%"></div></div>
+      </div>
+
+      <div id="card-kering" class="glass-card rounded-3xl p-5">
+        <div class="flex justify-between"><span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kondisi Tanah</span><span class="text-2xl">🏜️</span></div>
+        <div class="my-3"><div id="tanah-kering-value" class="text-3xl font-extrabold text-orange-400">--</div><p id="kering-status" class="text-xs text-slate-400 font-semibold mt-1">Status: --</p></div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 p-0.5 border border-slate-700/50"><div id="kering-bar" class="bg-gradient-to-r from-orange-500 to-amber-400 h-full rounded-full transition-all duration-500" style="width:0%"></div></div>
+      </div>
+
+      <div id="card-tercemar" class="glass-card rounded-3xl p-5">
+        <div class="flex justify-between"><span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kondisi Udara</span><span class="text-2xl">🌫️</span></div>
+        <div class="my-3"><div id="udara-tercemar-value" class="text-3xl font-extrabold text-red-400">--</div><p id="tercemar-status" class="text-xs text-slate-400 font-semibold mt-1">Status: --</p></div>
+        <div class="w-full bg-slate-800/80 rounded-full h-2 p-0.5 border border-slate-700/50"><div id="tercemar-bar" class="bg-gradient-to-r from-red-500 to-rose-400 h-full rounded-full transition-all duration-500" style="width:0%"></div></div>
       </div>
 
     </main>
@@ -268,20 +280,27 @@
 
   function toValues(row) {
     return {
-      tanah: num(row.tanah), mq: num(row.mq135), ldr: num(row.ldr),
+      tanah: num(row.tanah), 
+      mq: num(row.mq135), 
+      ldr: num(row.ldr),
       relay: row.relay === null || row.relay === undefined ? null : (row.relay ? 1 : 0),
-      kering: row.tanah_kering, tercemar: row.udara_tercemar
+      kering: row.tanah_kering, 
+      tercemar: row.udara_tercemar
     };
   }
 
   function setStatus(el, text, cls) {
     const e = document.getElementById(el);
-    e.innerText = text;
-    e.className = `text-xs font-semibold mt-0.5 ${cls}`;
+    if(e) {
+      e.innerText = text;
+      e.className = `text-xs font-semibold mt-0.5 ${cls}`;
+    }
   }
 
   function animateValue(id, start, end, dur, dec) {
-    const o = document.getElementById(id); let t0 = null;
+    const o = document.getElementById(id); 
+    if(!o) return;
+    let t0 = null;
     const step = t => {
       if (!t0) t0 = t;
       const k = Math.min((t - t0) / dur, 1), v = start + k * (end - start);
@@ -294,6 +313,7 @@
   function renderCards(v) {
     ['tanah', 'mq', 'ldr'].forEach(k => {
       const el = document.getElementById(k), bar = document.getElementById(k + '-bar');
+      if (!el || !bar) return;
       if (v[k] === null) { el.innerText = '--'; bar.style.width = '0%'; return; }
       animateValue(k, parseFloat(el.innerText) || 0, v[k], 800, CARD_META[k].dec);
       bar.style.width = Math.max(0, Math.min(CARD_META[k].bar(v[k]), 100)) + '%';
@@ -313,12 +333,41 @@
     else setStatus('ldr-status', 'Status: REDUP 🌤️', 'text-slate-300');
 
     const r = document.getElementById('relay');
-    if (v.relay === null) { r.innerText = '--'; setStatus('relay-status', 'Status: --', 'text-slate-400'); }
-    else {
-      r.innerText = v.relay ? 'ON' : 'OFF';
-      setStatus('relay-status', v.relay ? 'Lampu menyala (gelap)' : 'Lampu mati (terang)', v.relay ? 'text-purple-300' : 'text-slate-400');
+    if (r) {
+      if (v.relay === null) { r.innerText = '--'; setStatus('relay-status', 'Status: --', 'text-slate-400'); }
+      else {
+        r.innerText = v.relay ? 'ON' : 'OFF';
+        setStatus('relay-status', v.relay ? 'Lampu menyala (gelap)' : 'Lampu mati (terang)', v.relay ? 'text-purple-300' : 'text-slate-400');
+      }
     }
-    document.getElementById('relay-bar').style.width = v.relay ? '100%' : '0%';
+    const rBar = document.getElementById('relay-bar');
+    if(rBar) rBar.style.width = v.relay ? '100%' : '0%';
+
+    const keringEl = document.getElementById('tanah-kering-value');
+    const keringBar = document.getElementById('kering-bar');
+    if (keringEl && keringBar) {
+      if (v.kering === null || v.kering === undefined) {
+        keringEl.innerText = '--'; keringBar.style.width = '0%';
+        setStatus('kering-status', 'Status: --', 'text-slate-400');
+      } else {
+        keringEl.innerText = v.kering ? 'KERING' : 'BASAH';
+        keringBar.style.width = v.kering ? '100%' : '0%';
+        setStatus('kering-status', v.kering ? 'Pompa aktif' : 'Tanah basah', v.kering ? 'text-orange-400' : 'text-emerald-400');
+      }
+    }
+
+    const udaraEl = document.getElementById('udara-tercemar-value');
+    const udaraBar = document.getElementById('tercemar-bar');
+    if (udaraEl && udaraBar) {
+      if (v.tercemar === null || v.tercemar === undefined) {
+        udaraEl.innerText = '--'; udaraBar.style.width = '0%';
+        setStatus('tercemar-status', 'Status: --', 'text-slate-400');
+      } else {
+        udaraEl.innerText = v.tercemar ? 'TERCEMAR' : 'BERSIH';
+        udaraBar.style.width = v.tercemar ? '100%' : '0%';
+        setStatus('tercemar-status', v.tercemar ? 'Perhatian ⚠️' : 'Aman', v.tercemar ? 'text-red-400' : 'text-emerald-400');
+      }
+    }
   }
 
   function addHistory(row) {
@@ -326,6 +375,35 @@
     history.labels.push(new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     KEYS.forEach(k => history[k].push(v[k]));
     if (history.labels.length > MAX_POINTS) { history.labels.shift(); KEYS.forEach(k => history[k].shift()); }
+  }
+
+  // ---------- FUNGSI LOAD HISTORY (YANG SEBELUMNYA KURANG) ----------
+  async function loadHistory() {
+    const { data, error } = await db
+      .from(TABLE_NAME)
+      .select('created_at, tanah, mq135, ldr, relay, tanah_kering, udara_tercemar')
+      .order('created_at', { ascending: false })
+      .limit(MAX_POINTS);
+
+    if (error) {
+      console.error('[Supabase] Gagal memuat riwayat:', error);
+      document.getElementById('status-text').innerText = 'Gagal memuat data dari Supabase';
+      return;
+    }
+
+    if (data && data.length > 0) {
+      const rows = data.reverse();
+      history.labels = [];
+      KEYS.forEach(k => history[k] = []);
+
+      rows.forEach(row => {
+        addHistory(row);
+      });
+
+      renderCards(toValues(rows[rows.length - 1]));
+      refreshChart();
+      setStatusTime(rows[rows.length - 1].created_at);
+    }
   }
 
   // ---------- GRAFIK ----------
@@ -340,9 +418,11 @@
     if (!chartConfig[m]) return;
     activeMetric = m;
     document.querySelectorAll('.metric-btn').forEach(b => b.className = 'metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200');
-    document.getElementById('btn-' + m).className = 'metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-500 text-slate-950';
+    const btnM = document.getElementById('btn-' + m);
+    if(btnM) btnM.className = 'metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-500 text-slate-950';
     document.querySelectorAll('.glass-card').forEach(c => c.classList.remove('card-active'));
-    document.getElementById('card-' + m).classList.add('card-active');
+    const cardM = document.getElementById('card-' + m);
+    if(cardM) cardM.classList.add('card-active');
     if (!liveChart) return;
     const c = chartConfig[m], d = liveChart.data.datasets[0], isRelay = m === 'relay';
     d.label = c.label; d.borderColor = c.color; d.backgroundColor = c.bg; d.pointBackgroundColor = c.color;
@@ -375,6 +455,7 @@
   // ---------- STATUS ----------
   function updateStatusPill() {
     const dot = document.getElementById('status-dot'), txt = document.getElementById('status-text');
+    if(!dot || !txt) return;
     if (!lastDataTime) { txt.innerText = 'Menunggu data ESP32 #2...'; return; }
     const age = Date.now() - lastDataTime;
     const jam = new Date(lastDataTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -384,46 +465,66 @@
   }
   function setStatusTime(t) { lastDataTime = new Date(t).getTime(); updateStatusPill(); }
 
-  // ---------- SUPABASE ----------
-  async function loadHistory() {
-    const { data, error } = await db.from(TABLE_NAME).select('*').order('created_at', { ascending: false }).limit(MAX_POINTS);
-    if (error) throw error;
-    history.labels = []; KEYS.forEach(k => history[k] = []);
-    if (data.length) {
-      data.reverse().forEach(addHistory);
-      const last = data[data.length - 1];
-      renderCards(toValues(last));
-      setStatusTime(last.created_at);
-    }
-    refreshChart();
-  }
-
   async function cekDataTerbaru() {
     try {
-      const { data } = await db.from(TABLE_NAME).select('created_at').order('created_at', { ascending: false }).limit(1);
-      if (data && data.length && new Date(data[0].created_at).getTime() > lastDataTime) await loadHistory();
-    } catch (e) { console.error(e); }
+      const { data, error } = await db
+        .from(TABLE_NAME)
+        .select('created_at, tanah, mq135, ldr, relay, tanah_kering, udara_tercemar')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error) return;
+      if (!data || data.length === 0) return;
+
+      const row = data[0];
+      const newestTime = new Date(row.created_at).getTime();
+
+      if (!lastDataTime || newestTime > lastDataTime) {
+        await loadHistory();
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function startRealtime() {
     db.channel('sensor-live-2')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE_NAME }, p => {
-        addHistory(p.new); renderCards(toValues(p.new)); refreshChart(); setStatusTime(p.new.created_at);
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE_NAME }, (payload) => {
+        addHistory(payload.new);
+        renderCards(toValues(payload.new));
+        refreshChart();
+        setStatusTime(payload.new.created_at);
       })
-      .subscribe(s => console.log('Realtime Supabase:', s));
+      .subscribe();
   }
 
   async function manualSync() {
     const b = document.getElementById('btn-sync'), t = document.getElementById('sync-text'), i = document.getElementById('sync-icon');
-    b.disabled = true; i.classList.add('animate-spin'); t.innerText = 'Syncing...';
-    try { await loadHistory(); t.innerText = 'Updated!'; }
-    catch (e) { console.error(e); t.innerText = 'Failed!'; }
-    setTimeout(() => { i.classList.remove('animate-spin'); t.innerText = 'Sync Data'; b.disabled = false; }, 1500);
+    if(b) b.disabled = true; 
+    if(i) i.classList.add('animate-spin'); 
+    if(t) t.innerText = 'Syncing...';
+    try { 
+      await loadHistory(); 
+      if(t) t.innerText = 'Updated!'; 
+    }
+    catch (e) { 
+      if(t) t.innerText = 'Failed!'; 
+    }
+    setTimeout(() => { 
+      if(i) i.classList.remove('animate-spin'); 
+      if(t) t.innerText = 'Sync Data'; 
+      if(b) b.disabled = false; 
+    }, 1500);
   }
 
   window.addEventListener('DOMContentLoaded', async () => {
-    try { await loadHistory(); }
-    catch (e) { console.error(e); document.getElementById('status-text').innerText = 'Gagal terhubung ke Supabase'; }
+    try { 
+      await loadHistory(); 
+    }
+    catch (e) { 
+      const txt = document.getElementById('status-text');
+      if(txt) txt.innerText = 'Gagal terhubung ke Supabase'; 
+    }
     startRealtime();
     setInterval(updateStatusPill, 5000);
     setInterval(cekDataTerbaru, 15000);

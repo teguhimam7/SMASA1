@@ -17,6 +17,115 @@
   @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   .mascot-animation{animation:fl 3.5s ease-in-out infinite}
 </style>
+<style id="fx-layer-css">
+  /* ======= LAPISAN ANIMASI INTERAKTIF (tambahan, tidak mengubah gaya lama) ======= */
+  .metric-card { --mx: 50%; --my: 50%; position: relative; overflow: hidden; isolation: isolate; outline: none; }
+  .metric-card:focus-visible { box-shadow: 0 0 0 2px #22d3ee, 0 0 25px rgba(56,189,248,.35); }
+  .metric-card > :not(.fx):not(.ripple) { position: relative; z-index: 2; }
+  .metric-card::before {                  /* sorotan mengikuti kursor */
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(240px circle at var(--mx) var(--my), rgba(255,255,255,.10), transparent 65%);
+  }
+  .metric-card:hover::before { opacity: 1; }
+  .metric-card { animation: cardIn .7s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: calc(var(--i, 0) * 80ms); }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(18px) scale(.97); } }
+
+  .metric-card .ico { display: inline-block; transition: transform .4s cubic-bezier(.3,1.6,.5,1), filter .6s; }
+  .metric-card:hover .ico { transform: scale(1.25) rotate(-10deg); }
+
+  .val-flash { animation: valFlash .9s ease-out; }
+  @keyframes valFlash { 0% { text-shadow: 0 0 0 transparent; } 25% { text-shadow: 0 0 22px currentColor; } 100% { text-shadow: 0 0 0 transparent; } }
+
+  .trend { position: absolute; right: 0; top: 8px; font-size: 11px; font-weight: 700; color: #64748b; font-variant-numeric: tabular-nums; }
+  .trend.up { color: #fbbf24; } .trend.down { color: #38bdf8; }
+  .trend.pop { animation: trendPop .5s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes trendPop { from { transform: scale(1.6); } }
+
+  .spark, .ecg { display: block; width: 100%; height: 28px; margin-bottom: 10px; overflow: visible; }
+  .spark-line { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .spark-fill { fill: currentColor; opacity: .12; stroke: none; }
+  .ecg { color: rgb(var(--st, 52,211,153)); transition: color .6s; }
+  .ecg line { stroke: currentColor; stroke-opacity: .18; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .ecg polyline { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke;
+    stroke-dasharray: 70 230; animation: dash var(--ecg, 4s) linear infinite; filter: drop-shadow(0 0 3px currentColor); }
+  @keyframes dash { to { stroke-dashoffset: -300; } }
+
+  .bar-fill { position: relative; overflow: hidden; }
+  .bar-fill::after { content: ''; position: absolute; inset: 0; transform: translateX(-120%); animation: shine 3.2s ease-in-out infinite;
+    background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); }
+  @keyframes shine { 55%, 100% { transform: translateX(120%); } }
+
+  .ripple { position: absolute; z-index: 3; border-radius: 50%; pointer-events: none; background: rgba(255,255,255,.22); transform: scale(0); animation: rip .7s ease-out forwards; }
+  @keyframes rip { to { transform: scale(1); opacity: 0; } }
+
+  .fx { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; border-radius: inherit; }
+  @keyframes breathe { 50% { transform: scale(1.14); opacity: .6; } }
+  @keyframes drop { to { transform: translateY(300px); } }
+  @keyframes alarm { 0%, 100% { box-shadow: 0 0 14px rgba(239,68,68,.35); } 50% { box-shadow: 0 0 42px rgba(239,68,68,.85); } }
+
+  /* TANAH: air bergelombang setinggi kelembaban; oranye saat kering */
+  .mc-tanah { --lvl: 0; --wc: 52,211,153; }
+  .mc-tanah.dry { --wc: 251,146,60; }
+  .fx-soil .water { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--lvl) * 1%); display: flex; flex-direction: column; transition: height 1.4s cubic-bezier(.3,1.1,.5,1); }
+  .fx-soil .wv { width: 200%; height: 14px; flex: none; fill: rgba(var(--wc), .22); animation: wave 5s linear infinite; transition: fill .8s; }
+  .fx-soil .fill { flex: 1; background: linear-gradient(rgba(var(--wc), .22), rgba(var(--wc), .08)); transition: background .8s; }
+  @keyframes wave { to { transform: translateX(-50%); } }
+
+  /* UDARA: kepulan asap naik; makin pekat & merah saat tercemar */
+  .mc-mq { --smoke: .1; --sc: 148,163,184; --sp: 7s; }
+  .mc-mq.bad { --sc: 248,113,113; --sp: 4.5s; }
+  .fx-smoke i { position: absolute; bottom: -40px; width: 80px; height: 80px; border-radius: 50%; filter: blur(12px); opacity: 0;
+    background: radial-gradient(circle, rgba(var(--sc), .65), transparent 70%); animation: rise var(--sp) ease-in infinite; transition: background .8s; }
+  .fx-smoke i:nth-child(1) { left: 2%; } .fx-smoke i:nth-child(2) { left: 22%; animation-delay: -1.6s; } .fx-smoke i:nth-child(3) { left: 42%; animation-delay: -3.1s; }
+  .fx-smoke i:nth-child(4) { left: 60%; animation-delay: -4.4s; } .fx-smoke i:nth-child(5) { left: 78%; animation-delay: -2.2s; } .fx-smoke i:nth-child(6) { left: 90%; animation-delay: -5.5s; }
+  @keyframes rise { 0% { transform: translate(0, 0) scale(.6); opacity: 0; } 20% { opacity: var(--smoke); } 100% { transform: translate(24px, -260px) scale(1.5); opacity: 0; } }
+
+  /* LDR: sinar berputar saat terang, bintang berkelip saat gelap */
+  .mc-ldr { --o: .1; }
+  .fx-ldr .rays { position: absolute; width: 230px; height: 230px; right: -75px; top: -75px; border-radius: 50%; opacity: var(--o); transition: opacity 1.2s;
+    background: repeating-conic-gradient(from 0deg, rgba(251,191,36,.55) 0 5deg, transparent 5deg 15deg);
+    -webkit-mask-image: radial-gradient(circle, #000 15%, transparent 68%); mask-image: radial-gradient(circle, #000 15%, transparent 68%);
+    animation: spin 24s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .fx-ldr::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s; background: radial-gradient(circle at 85% 10%, rgba(129,140,248,.35), transparent 60%); }
+  .mc-ldr.night .fx-ldr::before { opacity: 1; }
+  .fx-ldr .stars i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #c7d2fe; box-shadow: 0 0 6px #c7d2fe; opacity: 0; }
+  .mc-ldr.night .fx-ldr .stars i { animation: twinkle 2.4s ease-in-out infinite; }
+  .fx-ldr .stars i:nth-child(1) { right: 12%; top: 12%; } .fx-ldr .stars i:nth-child(2) { right: 28%; top: 26%; animation-delay: -.6s; }
+  .fx-ldr .stars i:nth-child(3) { right: 6%; top: 36%; animation-delay: -1.2s; } .fx-ldr .stars i:nth-child(4) { right: 40%; top: 10%; animation-delay: -1.8s; }
+  .fx-ldr .stars i:nth-child(5) { right: 20%; top: 46%; animation-delay: -.3s; } .fx-ldr .stars i:nth-child(6) { right: 50%; top: 30%; animation-delay: -2.1s; }
+  @keyframes twinkle { 0%, 100% { opacity: .1; transform: scale(.6); } 50% { opacity: 1; transform: scale(1.3); } }
+
+  /* LAMPU (RELAY): cahaya hangat & kerucut sinar saat ON */
+  .fx-lamp .glow { position: absolute; width: 230px; height: 230px; right: -75px; top: -85px; border-radius: 50%; opacity: 0; transform: scale(.6); transition: opacity .8s, transform .8s;
+    background: radial-gradient(circle, rgba(253,224,71,.7), rgba(250,204,21,.25) 40%, transparent 70%); }
+  .fx-lamp .cone { position: absolute; right: 14px; top: 36px; width: 160px; height: 180px; opacity: 0; transition: opacity .8s;
+    background: linear-gradient(to bottom, rgba(253,224,71,.28), transparent); clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%); }
+  .mc-relay.on { border-color: rgba(253,224,71,.55) !important; }
+  .mc-relay.on .glow { opacity: .55; transform: scale(1); animation: breathe 3s ease-in-out infinite; }
+  .mc-relay.on .cone { opacity: 1; animation: flicker 5s steps(1) infinite; }
+  .mc-relay.on .ico { filter: drop-shadow(0 0 10px #fde047); }
+  @keyframes flicker { 0%, 90%, 100% { opacity: 1; } 92% { opacity: .55; } 94% { opacity: 1; } 96% { opacity: .7; } }
+
+  /* KONDISI TANAH: tetes air saat pompa aktif */
+  .mc-kering { --st: 52,211,153; --ecg: 4s; }
+  .mc-kering.on { --st: 251,146,60; --ecg: 1.2s; }
+  .fx-pump::before { content: ''; position: absolute; left: -40px; bottom: -60px; width: 200px; height: 200px; border-radius: 50%; opacity: .25; animation: breathe 4s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(var(--st), .5), transparent 68%); transition: background .8s; }
+  .fx-pump .drop { position: absolute; top: -14px; width: 1.5px; height: 14px; background: linear-gradient(transparent, rgba(125,211,252,.85)); opacity: 0; animation: drop 1.1s linear infinite; }
+  .mc-kering.on .fx-pump .drop { opacity: .9; }
+
+  /* KONDISI UDARA: radar menyapu; alarm merah saat tercemar */
+  .mc-tercemar { --st: 52,211,153; --sw: 6s; --ecg: 4s; }
+  .mc-tercemar.on { --st: 248,113,113; --sw: 1.8s; --ecg: 1.2s; border-color: rgba(248,113,113,.9) !important; animation: alarm 1s ease-in-out infinite; }
+  .fx-scan b { position: absolute; top: 0; bottom: 0; left: 0; width: 70px; opacity: .6; transform: translateX(-90px); animation: sweep var(--sw) linear infinite;
+    background: linear-gradient(90deg, transparent, rgba(var(--st), .35), transparent); }
+  @keyframes sweep { to { transform: translateX(520px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .metric-card, .metric-card *, .fx *, .fx::before, .fx-pump::before { animation: none !important; }
+  }
+</style>
 </head>
 <body class="text-slate-100 p-4 md:p-8 min-h-screen">
 <div class="max-w-6xl mx-auto space-y-8">
@@ -530,6 +639,178 @@
     setInterval(updateStatusPill, 5000);
     setInterval(cekDataTerbaru, 15000);
   });
+</script>
+<script id="fx-layer">
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const KEYS = ['tanah', 'mq', 'ldr', 'relay', 'kering', 'tercemar'];
+  const SPARK = { tanah: '#34d399', mq: '#fb923c', ldr: '#fbbf24', relay: '#c084fc' };
+  const puffs = '<i></i>'.repeat(6);
+  const FX = {
+    tanah: '<div class="fx fx-soil"><div class="water"><svg class="wv" viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0 7 Q50 0 100 7 T200 7 T300 7 T400 7 V14 H0Z"/></svg><div class="fill"></div></div></div>',
+    mq: '<div class="fx fx-smoke">' + puffs + '</div>',
+    ldr: '<div class="fx fx-ldr"><div class="rays"></div><div class="stars">' + puffs + '</div></div>',
+    relay: '<div class="fx fx-lamp"><div class="glow"></div><div class="cone"></div></div>',
+    kering: '<div class="fx fx-pump"><div class="drops"></div></div>',
+    tercemar: '<div class="fx fx-scan"><b></b></div>'
+  };
+  const SPARK_SVG = '<svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><path class="spark-fill" d=""/><path class="spark-line" d=""/></svg>';
+  const ECG_SVG = '<svg class="ecg" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="14" x2="100" y2="14"/><polyline points="0,14 25,14 30,14 34,4 40,24 45,14 60,14 66,10 70,14 100,14"/></svg>';
+
+  // ---------- Pasang lapisan efek pada kartu yang sudah ada ----------
+  KEYS.forEach((k, i) => {
+    const c = $('card-' + k);
+    if (!c) return;
+    c.classList.add('metric-card', 'mc-' + k);
+    c.style.setProperty('--i', i);
+    c.insertAdjacentHTML('afterbegin', FX[k]);
+
+    const ico = c.querySelector('.text-2xl'); if (ico) ico.classList.add('ico');
+    const bar = c.querySelector('[id$="-bar"]'); if (bar) bar.classList.add('bar-fill');
+
+    const my = c.querySelector('.my-3');
+    if (my && SPARK[k]) {
+      my.insertAdjacentHTML('beforeend', '<span class="trend" id="fx-trend-' + k + '">● stabil</span>');
+      my.insertAdjacentHTML('afterend', SPARK_SVG);
+      c.querySelector('.spark').style.color = SPARK[k];
+    } else if (my) {
+      my.insertAdjacentHTML('afterend', ECG_SVG);
+    }
+
+    // tetes air pompa
+    if (k === 'kering') {
+      const box = c.querySelector('.fx-pump .drops');
+      for (let n = 0; n < 12; n++) {
+        const d = document.createElement('span');
+        d.className = 'drop';
+        d.style.left = ((n * 37 + 8) % 96) + '%';
+        d.style.animationDelay = (-((n * 0.37) % 1.1)).toFixed(2) + 's';
+        box.appendChild(d);
+      }
+    }
+
+    // miring 3D + sorotan kursor
+    c.addEventListener('mousemove', e => {
+      const r = c.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+      c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      c.style.transform = 'perspective(1000px) rotateX(' + (-y / 15) + 'deg) rotateY(' + (x / 15) + 'deg) scale3d(1.02,1.02,1.02)';
+    });
+    c.addEventListener('mouseleave', () => {
+      c.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+    });
+
+    // kartu yang bisa diklik: riak + akses keyboard
+    if (c.hasAttribute('onclick')) {
+      c.setAttribute('tabindex', '0');
+      c.setAttribute('role', 'button');
+      c.addEventListener('click', e => {
+        const r = c.getBoundingClientRect(), s = Math.max(r.width, r.height) * 2;
+        const rp = document.createElement('span');
+        rp.className = 'ripple';
+        rp.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (e.clientX - r.left - s / 2) + 'px;top:' + (e.clientY - r.top - s / 2) + 'px';
+        c.appendChild(rp);
+        setTimeout(() => rp.remove(), 750);
+      });
+      c.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); }
+      });
+    }
+  });
+
+  // ---------- Sparkline & tren dari riwayat yang sudah dimiliki halaman ----------
+  function getHistory() {
+    try { return (typeof history === 'object' && history && Array.isArray(history.tanah)) ? history : null; }
+    catch (e) { return null; }
+  }
+  function updateSpark(k, H) {
+    const c = $('card-' + k); const svg = c && c.querySelector('.spark');
+    if (!svg || !H) return;
+    const arr = H[k] || [];
+    const pts = arr.map((v, i) => ({ v, i })).filter(p => p.v !== null && p.v !== undefined);
+    const line = svg.querySelector('.spark-line'), fill = svg.querySelector('.spark-fill');
+    if (!pts.length) { line.setAttribute('d', ''); fill.setAttribute('d', ''); return; }
+    const n = Math.max(arr.length - 1, 1);
+    const min = Math.min(...pts.map(p => p.v)), max = Math.max(...pts.map(p => p.v));
+    const flat = max === min, span = flat ? 1 : max - min;
+    const xy = pts.map(p => [(p.i / n) * 100, flat ? 14 : 24 - ((p.v - min) / span) * 20]);
+    if (xy.length === 1) xy.push([100, xy[0][1]]);
+    const d = xy.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' ');
+    line.setAttribute('d', d);
+    fill.setAttribute('d', d + ' L' + xy[xy.length - 1][0].toFixed(1) + ' 28 L' + xy[0][0].toFixed(1) + ' 28 Z');
+  }
+  function updateTrend(k, H) {
+    const t = $('fx-trend-' + k);
+    if (!t || !H) return;
+    const a = H[k] || [], cur = a[a.length - 1], prev = a[a.length - 2];
+    let cls = 'trend', txt = '● stabil';
+    if (cur !== null && cur !== undefined && prev !== null && prev !== undefined) {
+      const diff = cur - prev;
+      if (k === 'relay') {
+        if (diff !== 0) { cls += diff > 0 ? ' up' : ' down'; txt = diff > 0 ? '▲ baru menyala' : '▼ baru mati'; }
+      } else if (Math.abs(diff) >= 0.5) {
+        cls += diff > 0 ? ' up' : ' down';
+        txt = (diff > 0 ? '▲ +' : '▼ −') + Math.abs(diff).toFixed(0);
+      }
+    }
+    if (t.innerText !== txt) cls += ' pop';
+    t.className = cls; t.innerText = txt;
+  }
+
+  // ---------- Efek visual sesuai nilai terbaru ----------
+  function fxUpdate(v) {
+    const H = getHistory();
+    const bool = x => (x === null || x === undefined) ? null : !!x;
+    const kering = bool(v.kering), tercemar = bool(v.tercemar);
+    const set = (k, n, val) => { const c = $('card-' + k); if (c) c.style.setProperty(n, val); };
+    const tog = (k, cls, on) => { const c = $('card-' + k); if (c) c.classList.toggle(cls, !!on); };
+
+    // kilatan angka saat data baru masuk
+    ['tanah', 'mq', 'ldr', 'relay', 'tanah-kering-value', 'udara-tercemar-value'].forEach(id => {
+      const el = $(id); if (!el) return;
+      const w = (id === 'tanah' || id === 'mq' || id === 'ldr') ? el.parentElement : el;
+      w.classList.remove('val-flash'); void w.offsetWidth; w.classList.add('val-flash');
+    });
+
+    ['tanah', 'mq', 'ldr', 'relay'].forEach(k => { updateSpark(k, H); updateTrend(k, H); });
+
+    // tanah
+    set('tanah', '--lvl', v.tanah === null || v.tanah === undefined ? 0 : clamp(v.tanah, 0, 100));
+    tog('tanah', 'dry', kering === true);
+
+    // udara
+    set('mq', '--smoke', v.mq === null || v.mq === undefined ? 0.05 : (0.08 + 0.55 * clamp(v.mq / 4095, 0, 1)).toFixed(2));
+    tog('mq', 'bad', tercemar === true);
+
+    // cahaya (>1800 gelap, <1000 terang, sama dengan status di kartu)
+    if (v.ldr === null || v.ldr === undefined) { set('ldr', '--o', 0.1); tog('ldr', 'night', false); }
+    else {
+      const gelap = v.ldr > 1800;
+      set('ldr', '--o', gelap ? 0.06 : (0.25 + 0.65 * clamp((1800 - v.ldr) / 1800, 0, 1)).toFixed(2));
+      tog('ldr', 'night', gelap);
+    }
+
+    // lampu
+    tog('relay', 'on', v.relay === 1);
+
+    // kondisi tanah & udara
+    tog('kering', 'on', kering === true);
+    tog('tercemar', 'on', tercemar === true);
+  }
+
+  // Bungkus renderCards bawaan halaman: logika lama tetap jalan apa adanya
+  const asli = window.renderCards;
+  if (typeof asli === 'function') {
+    window.renderCards = function () {
+      const hasil = asli.apply(this, arguments);
+      try { fxUpdate(arguments[0] || {}); } catch (e) { console.error('[fx-layer]', e); }
+      return hasil;
+    };
+  }
+})();
 </script>
 </body>
 </html>

@@ -66,6 +66,113 @@
     .mascot-animation {
       animation: mascotFloat 3.5s ease-in-out infinite;
     }
+    /* ======================= KARTU METRIK INTERAKTIF ======================= */
+    .metric-card { --mx: 50%; --my: 50%; isolation: isolate; outline: none; position: relative; overflow: hidden; min-height: 250px; }
+    .metric-card:focus-visible { box-shadow: 0 0 0 2px #22d3ee, 0 0 25px rgba(56,189,248,.35); }
+    .metric-card::before {                 /* sorotan mengikuti kursor */
+      content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(240px circle at var(--mx) var(--my), rgba(255,255,255,.10), transparent 65%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .metric-card:hover::before { opacity: 1; }
+    .metric-card { animation: cardIn .7s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: calc(var(--i) * 80ms); }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(18px) scale(.97); } }
+
+    .metric-card .ico { display: inline-block; transition: transform .4s cubic-bezier(.3,1.6,.5,1); }
+    .metric-card:hover .ico { transform: scale(1.25) rotate(-10deg); }
+
+    /* kilatan angka saat data baru masuk */
+    .val-flash { animation: valFlash .9s ease-out; }
+    @keyframes valFlash { 0% { text-shadow: 0 0 0 transparent; } 25% { text-shadow: 0 0 22px currentColor; } 100% { text-shadow: 0 0 0 transparent; } }
+
+    /* badge status & tren */
+    .badge { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; border: 1px solid; transition: all .4s; white-space: nowrap; }
+    .tone-muted { color: #94a3b8; border-color: rgba(148,163,184,.3); background: rgba(148,163,184,.08); }
+    .tone-ok    { color: #34d399; border-color: rgba(52,211,153,.35); background: rgba(52,211,153,.10); }
+    .tone-info  { color: #38bdf8; border-color: rgba(56,189,248,.35); background: rgba(56,189,248,.10); }
+    .tone-warn  { color: #fbbf24; border-color: rgba(251,191,36,.35); background: rgba(251,191,36,.10); }
+    .tone-hot   { color: #fb923c; border-color: rgba(251,146,60,.4);  background: rgba(251,146,60,.12); }
+    .tone-bad   { color: #f87171; border-color: rgba(248,113,113,.45); background: rgba(248,113,113,.14); }
+    .trend { font-size: 11px; font-weight: 700; color: #64748b; font-variant-numeric: tabular-nums; }
+    .trend.up   { color: #fbbf24; }
+    .trend.down { color: #38bdf8; }
+    .trend.pop  { animation: trendPop .5s cubic-bezier(.3,1.6,.5,1); }
+    @keyframes trendPop { from { transform: scale(1.6); } }
+
+    /* sparkline */
+    .spark { width: 100%; height: 28px; overflow: visible; }
+    .spark-line { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+    .spark-fill { fill: currentColor; opacity: .12; stroke: none; }
+
+    /* kilau pada bar */
+    .bar-fill { position: relative; overflow: hidden; }
+    .bar-fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); transform: translateX(-120%); animation: shine 3.2s ease-in-out infinite; }
+    @keyframes shine { 55%, 100% { transform: translateX(120%); } }
+
+    /* riak saat kartu diklik */
+    .ripple { position: absolute; z-index: 2; border-radius: 50%; pointer-events: none; background: rgba(255,255,255,.22); transform: scale(0); animation: rip .7s ease-out forwards; }
+    @keyframes rip { to { transform: scale(1); opacity: 0; } }
+
+    /* lapisan efek latar tiap kartu */
+    .fx { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; border-radius: inherit; }
+
+    /* SUHU: termometer + cahaya berubah warna */
+    .mc-temp { --lvl: 0; --glow: rgb(34, 211, 238); }
+    .fx-temp::before { content: ''; position: absolute; width: 190px; height: 190px; right: -60px; top: -60px; border-radius: 50%;
+      background: radial-gradient(circle, var(--glow), transparent 68%); opacity: .28; transition: background 1.2s, opacity 1.2s; animation: breathe 4s ease-in-out infinite; }
+    @keyframes breathe { 50% { transform: scale(1.18); opacity: .4; } }
+    .thermo { position: absolute; right: 18px; bottom: 46px; width: 8px; height: 82px; border-radius: 8px; background: rgba(148,163,184,.15); border: 1px solid rgba(148,163,184,.25); overflow: hidden; display: flex; align-items: flex-end; }
+    .mercury { width: 100%; height: calc(var(--lvl) * 1%); background: linear-gradient(to top, var(--glow), #fff8); border-radius: 8px; transition: height 1.2s cubic-bezier(.3,1.3,.5,1), background 1.2s; }
+
+    /* KELEMBAPAN: air bergelombang */
+    .mc-hum { --lvl: 0; }
+    .fx-hum .water { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--lvl) * 1%); display: flex; flex-direction: column; transition: height 1.4s cubic-bezier(.3,1.1,.5,1); }
+    .fx-hum .wv { width: 200%; height: 14px; flex: none; fill: rgba(96,165,250,.20); animation: wave 5s linear infinite; }
+    .fx-hum .fill { flex: 1; background: linear-gradient(rgba(96,165,250,.20), rgba(99,102,241,.10)); }
+    @keyframes wave { to { transform: translateX(-50%); } }
+
+    /* HUJAN: tetes air, jumlah & kecepatan mengikuti intensitas */
+    .mc-rain { --rain: 0; }
+    .fx-rain .drop { position: absolute; top: -14px; width: 1.5px; height: 14px; border-radius: 2px; background: linear-gradient(transparent, rgba(125,211,252,.85));
+      animation: drop linear infinite; animation-duration: calc(1.5s - var(--rain) * 1s); }
+    @keyframes drop { to { transform: translateY(300px); } }
+    .mc-rain.splash { box-shadow: 0 0 28px rgba(56,189,248,.30); }
+
+    /* CAHAYA & UV: sinar berputar */
+    .mc-light { --o: .1; } .mc-uv { --o: .1; --ray: 251,191,36; --spin: 30s; }
+    .fx-sun .rays { position: absolute; width: 230px; height: 230px; right: -75px; top: -75px; border-radius: 50%; opacity: var(--o); transition: opacity 1.2s;
+      background: repeating-conic-gradient(from 0deg, rgba(var(--ray, 251,191,36), .55) 0 5deg, transparent 5deg 15deg);
+      -webkit-mask-image: radial-gradient(circle, #000 15%, transparent 68%); mask-image: radial-gradient(circle, #000 15%, transparent 68%);
+      animation: spin var(--spin, 24s) linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* API: lidah api; mode alarm kalau terdeteksi */
+    .mc-fire { --fire: .1; }
+    .fx-fire i { position: absolute; bottom: -34px; width: 90px; height: 90px; border-radius: 50% 50% 45% 45%; filter: blur(16px); opacity: var(--fire); transition: opacity .6s;
+      background: radial-gradient(circle at 50% 70%, #fde047, #fb923c 45%, #ef4444 75%, transparent 78%); animation: flick 1.1s ease-in-out infinite alternate; }
+    .fx-fire i:nth-child(1) { left: 6%; } .fx-fire i:nth-child(2) { left: 36%; animation-duration: .8s; animation-delay: -.3s; } .fx-fire i:nth-child(3) { right: 4%; animation-duration: 1.4s; animation-delay: -.6s; }
+    @keyframes flick { from { transform: translateY(6px) scale(.9, .85); } to { transform: translateY(-10px) scale(1.12, 1.2); } }
+    .mc-fire.alert { border-color: rgba(248,113,113,.9) !important; animation: alarm 1s ease-in-out infinite, shake .5s 1; }
+    .mc-fire.alert .ico { animation: flick 0.5s ease-in-out infinite alternate; }
+    @keyframes alarm { 0%, 100% { box-shadow: 0 0 14px rgba(239,68,68,.35); } 50% { box-shadow: 0 0 42px rgba(239,68,68,.85); } }
+    @keyframes shake { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+
+    /* JARAK: gelombang sonar */
+    .mc-dist { --ping: 2.4s; }
+    .fx-sonar b { position: absolute; right: 22px; top: 22px; width: 120px; height: 120px; margin: -60px -60px 0 0; border: 1.5px solid rgba(192,132,252,.7); border-radius: 50%;
+      transform: scale(.1); opacity: 0; animation: ping var(--ping) ease-out infinite; }
+    .fx-sonar b:nth-child(2) { animation-delay: calc(var(--ping) / 3); } .fx-sonar b:nth-child(3) { animation-delay: calc(var(--ping) * 2 / 3); }
+    @keyframes ping { 0% { transform: scale(.1); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }
+
+    /* TEGANGAN UV: denyut listrik */
+    .mc-uvmv { --volt: .15; --vspd: 3s; }
+    .fx-volt svg { position: absolute; left: 0; right: 0; bottom: 56px; width: 100%; height: 40px; opacity: var(--volt); transition: opacity 1s; }
+    .fx-volt polyline { fill: none; stroke: #818cf8; stroke-width: 1.8; stroke-linejoin: round; stroke-dasharray: 60 140; animation: dash var(--vspd) linear infinite; filter: drop-shadow(0 0 4px #818cf8); }
+    @keyframes dash { to { stroke-dashoffset: -200; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .metric-card, .metric-card *, .fx *, .fx::before { animation: none !important; }
+    }
   </style>
 </head>
 <body class="text-slate-100 p-4 md:p-8 min-h-screen relative">
@@ -159,7 +266,7 @@
       </div>
     </header>
 
-    <!-- 2. METRIC CARDS GRID (6 KARTU SENSOR) -->
+    <!-- 2. METRIC CARDS GRID (8 KARTU SENSOR) -->
     <section>
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -168,138 +275,225 @@
         <span class="text-xs text-slate-400">Klik kartu untuk menampilkan pada grafik</span>
       </div>
 
-      <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        
-        <!-- 1. Suhu -->
-        <div onclick="selectMetric('temp')" id="card-temp" class="glass-card card-active rounded-3xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Suhu Udara</span>
-            <span class="text-2xl animate-bounce">🌡️</span>
-          </div>
-          <div class="my-3">
-            <div class="text-4xl font-extrabold tracking-tight text-cyan-400">
-              <span id="temp" class="metric-val">0.0</span><span class="text-xl text-slate-400"> °C</span>
+      <main id="metric-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+        <!-- 1. Suhu Udara -->
+        <div onclick="selectMetric('temp'); ripple(event, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMetric('temp');}" tabindex="0" role="button" aria-label="Tampilkan Suhu Udara pada grafik" id="card-temp" style="--i:0"
+          class="glass-card metric-card mc-temp card-active rounded-3xl p-5 cursor-pointer relative overflow-hidden min-h-[250px]" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+          <div class="fx fx-temp"><div class="thermo"><div class="mercury"></div></div></div>
+          <div class="relative z-10 flex flex-col h-full justify-between gap-1">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Suhu Udara</span>
+              <span class="ico text-2xl">🌡️</span>
             </div>
-          </div>
-          <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-            <div id="temp-bar" class="bg-gradient-to-r from-cyan-500 to-sky-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            <div class="my-2">
+              <div class="val-wrap text-4xl font-extrabold tracking-tight text-cyan-400">
+                <span id="temp" class="metric-val">0.0</span><span class="text-xl text-slate-400"> °C</span>
+              </div>
+              <div class="flex items-center justify-between mt-1.5 gap-2">
+                <span id="temp-badge" class="badge tone-muted">Menunggu data</span>
+                <span id="temp-trend" class="trend">●</span>
+              </div>
+            </div>
+            <svg id="temp-spark" class="spark text-cyan-400" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+              <path class="spark-fill" d=""/><path class="spark-line" d=""/>
+            </svg>
+            <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="temp-bar" class="bar-fill bg-gradient-to-r from-cyan-500 to-sky-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
           </div>
         </div>
 
         <!-- 2. Kelembapan -->
-        <div onclick="selectMetric('hum')" id="card-hum" class="glass-card rounded-3xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kelembapan</span>
-            <span class="text-2xl animate-pulse">💧</span>
-          </div>
-          <div class="my-3">
-            <div class="text-4xl font-extrabold tracking-tight text-blue-400">
-              <span id="hum" class="metric-val">0.0</span><span class="text-xl text-slate-400"> %</span>
+        <div onclick="selectMetric('hum'); ripple(event, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMetric('hum');}" tabindex="0" role="button" aria-label="Tampilkan Kelembapan pada grafik" id="card-hum" style="--i:1"
+          class="glass-card metric-card mc-hum rounded-3xl p-5 cursor-pointer relative overflow-hidden min-h-[250px]" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+          <div class="fx fx-hum"><div class="water"><svg class="wv" viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0 7 Q50 0 100 7 T200 7 T300 7 T400 7 V14 H0Z"/></svg><div class="fill"></div></div></div>
+          <div class="relative z-10 flex flex-col h-full justify-between gap-1">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Kelembapan</span>
+              <span class="ico text-2xl">💧</span>
             </div>
-          </div>
-          <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-            <div id="hum-bar" class="bg-gradient-to-r from-blue-500 to-indigo-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            <div class="my-2">
+              <div class="val-wrap text-4xl font-extrabold tracking-tight text-blue-400">
+                <span id="hum" class="metric-val">0.0</span><span class="text-xl text-slate-400"> %</span>
+              </div>
+              <div class="flex items-center justify-between mt-1.5 gap-2">
+                <span id="hum-badge" class="badge tone-muted">Menunggu data</span>
+                <span id="hum-trend" class="trend">●</span>
+              </div>
+            </div>
+            <svg id="hum-spark" class="spark text-blue-400" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+              <path class="spark-fill" d=""/><path class="spark-line" d=""/>
+            </svg>
+            <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="hum-bar" class="bar-fill bg-gradient-to-r from-blue-500 to-indigo-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
           </div>
         </div>
 
-        <!-- 3. Cahaya -->
-        <div onclick="selectMetric('light')" id="card-light" class="glass-card rounded-3xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Intensitas LDR</span>
-            <span class="text-2xl">☀️</span>
-          </div>
-          <div class="my-3">
-            <div class="text-4xl font-extrabold tracking-tight text-amber-400">
-              <span id="light" class="metric-val">0</span><span class="text-xl text-slate-400"> ADC</span>
+        <!-- 3. Intensitas Hujan -->
+        <div onclick="selectMetric('rain'); ripple(event, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMetric('rain');}" tabindex="0" role="button" aria-label="Tampilkan Intensitas Hujan pada grafik" id="card-rain" style="--i:2"
+          class="glass-card metric-card mc-rain rounded-3xl p-5 cursor-pointer relative overflow-hidden min-h-[250px]" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+          <div class="fx fx-rain" id="rain-drops"></div>
+          <div class="relative z-10 flex flex-col h-full justify-between gap-1">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Intensitas Hujan</span>
+              <span class="ico text-2xl">🌧️</span>
             </div>
-          </div>
-          <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-            <div id="light-bar" class="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            <div class="my-2">
+              <div class="val-wrap text-4xl font-extrabold tracking-tight text-sky-400">
+                <span id="rain" class="metric-val">0.0</span><span class="text-xl text-slate-400"> %</span>
+              </div>
+              <div class="flex items-center justify-between mt-1.5 gap-2">
+                <span id="rain-badge" class="badge tone-muted">Menunggu data</span>
+                <span id="rain-trend" class="trend">●</span>
+              </div>
+            </div>
+            <svg id="rain-spark" class="spark text-sky-400" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+              <path class="spark-fill" d=""/><path class="spark-line" d=""/>
+            </svg>
+            <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="rain-bar" class="bar-fill bg-gradient-to-r from-sky-400 to-blue-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
           </div>
         </div>
 
-        <!-- 4. Air Quality (AQI) -->
-        <div onclick="selectMetric('fire')" id="card-fire" class="glass-card rounded-3xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Sensor Api</span>
-            <span class="text-2xl">🔥</span>
-          </div>
-          <div class="my-3">
-            <div class="text-4xl font-extrabold tracking-tight text-orange-400">
-              <span id="fire" class="metric-val">0</span><span class="text-xl text-slate-400"> ADC</span>
+        <!-- 4. Intensitas LDR -->
+        <div onclick="selectMetric('light'); ripple(event, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMetric('light');}" tabindex="0" role="button" aria-label="Tampilkan Intensitas LDR pada grafik" id="card-light" style="--i:3"
+          class="glass-card metric-card mc-light rounded-3xl p-5 cursor-pointer relative overflow-hidden min-h-[250px]" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+          <div class="fx fx-sun fx-light"><div class="rays"></div></div>
+          <div class="relative z-10 flex flex-col h-full justify-between gap-1">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Intensitas LDR</span>
+              <span class="ico text-2xl">☀️</span>
             </div>
-            <p id="fire-status" class="text-xs text-slate-400 font-semibold mt-0.5">Status: --</p>
-          </div>
-          <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-            <div id="fire-bar" class="bg-gradient-to-r from-orange-500 to-red-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            <div class="my-2">
+              <div class="val-wrap text-4xl font-extrabold tracking-tight text-amber-400">
+                <span id="light" class="metric-val">0</span><span class="text-xl text-slate-400"> ADC</span>
+              </div>
+              <div class="flex items-center justify-between mt-1.5 gap-2">
+                <span id="light-badge" class="badge tone-muted">Menunggu data</span>
+                <span id="light-trend" class="trend">●</span>
+              </div>
+            </div>
+            <svg id="light-spark" class="spark text-amber-400" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+              <path class="spark-fill" d=""/><path class="spark-line" d=""/>
+            </svg>
+            <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="light-bar" class="bar-fill bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
           </div>
         </div>
 
-        <!-- 5. Jarak Ultrasonik -->
-        <div onclick="selectMetric('dist')" id="card-dist" class="glass-card rounded-3xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Jarak Ultrasonik</span>
-            <span class="text-2xl">📏</span>
-          </div>
-          <div class="my-3">
-            <div class="text-4xl font-extrabold tracking-tight text-purple-400">
-              <span id="dist" class="metric-val">0.0</span><span class="text-xl text-slate-400"> cm</span>
+        <!-- 5. Sensor Api -->
+        <div onclick="selectMetric('fire'); ripple(event, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMetric('fire');}" tabindex="0" role="button" aria-label="Tampilkan Sensor Api pada grafik" id="card-fire" style="--i:4"
+          class="glass-card metric-card mc-fire rounded-3xl p-5 cursor-pointer relative overflow-hidden min-h-[250px]" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+          <div class="fx fx-fire"><i></i><i></i><i></i></div>
+          <div class="relative z-10 flex flex-col h-full justify-between gap-1">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Sensor Api</span>
+              <span class="ico text-2xl">🔥</span>
             </div>
-          </div>
-          <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-            <div id="dist-bar" class="bg-gradient-to-r from-purple-500 to-fuchsia-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            <div class="my-2">
+              <div class="val-wrap text-4xl font-extrabold tracking-tight text-orange-400">
+                <span id="fire" class="metric-val">0</span><span class="text-xl text-slate-400"> ADC</span>
+              </div>
+              <div class="flex items-center justify-between mt-1.5 gap-2">
+                <span id="fire-badge" class="badge tone-muted">Menunggu data</span>
+                <span id="fire-trend" class="trend">●</span>
+              </div>
+            </div>
+            <svg id="fire-spark" class="spark text-orange-400" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+              <path class="spark-fill" d=""/><path class="spark-line" d=""/>
+            </svg>
+            <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="fire-bar" class="bar-fill bg-gradient-to-r from-orange-500 to-red-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
           </div>
         </div>
 
-        <!-- 7. Intensitas Hujan (Rain Gauge) -->
-        <div onclick="selectMetric('rain')" id="card-rain" class="glass-card rounded-3xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Intensitas Hujan</span>
-            <span class="text-2xl">🌧️</span>
-          </div>
-          <div class="my-3">
-            <div class="text-4xl font-extrabold tracking-tight text-sky-400">
-              <span id="rain" class="metric-val">0.0</span><span class="text-xl text-slate-400"> %</span>
+        <!-- 6. Jarak Ultrasonik -->
+        <div onclick="selectMetric('dist'); ripple(event, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMetric('dist');}" tabindex="0" role="button" aria-label="Tampilkan Jarak Ultrasonik pada grafik" id="card-dist" style="--i:5"
+          class="glass-card metric-card mc-dist rounded-3xl p-5 cursor-pointer relative overflow-hidden min-h-[250px]" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+          <div class="fx fx-sonar"><b></b><b></b><b></b></div>
+          <div class="relative z-10 flex flex-col h-full justify-between gap-1">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Jarak Ultrasonik</span>
+              <span class="ico text-2xl">📏</span>
             </div>
-          </div>
-          <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-            <div id="rain-bar" class="bg-gradient-to-r from-sky-400 to-blue-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-          </div>
-        </div>
-        
-        <!-- 8. UV Index -->
-        <div onclick="selectMetric('uv')" id="card-uv" class="glass-card rounded-3xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">UV Index</span>
-            <span class="text-2xl">🔆</span>
-          </div>
-          <div class="my-3">
-            <div class="text-4xl font-extrabold tracking-tight text-pink-400">
-              <span id="uv" class="metric-val">0.0</span><span class="text-xl text-slate-400"> idx</span>
+            <div class="my-2">
+              <div class="val-wrap text-4xl font-extrabold tracking-tight text-purple-400">
+                <span id="dist" class="metric-val">0.0</span><span class="text-xl text-slate-400"> cm</span>
+              </div>
+              <div class="flex items-center justify-between mt-1.5 gap-2">
+                <span id="dist-badge" class="badge tone-muted">Menunggu data</span>
+                <span id="dist-trend" class="trend">●</span>
+              </div>
             </div>
-          </div>
-          <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-            <div id="uv-bar" class="bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            <svg id="dist-spark" class="spark text-purple-400" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+              <path class="spark-fill" d=""/><path class="spark-line" d=""/>
+            </svg>
+            <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="dist-bar" class="bar-fill bg-gradient-to-r from-purple-500 to-fuchsia-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
           </div>
         </div>
 
-        <!-- 9. Tekanan Udara -->
-        <div onclick="selectMetric('pres')" id="card-pres" class="glass-card rounded-3xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Tekanan Udara</span>
-            <span class="text-2xl">🧭</span>
-          </div>
-          <div class="my-3">
-            <div class="text-4xl font-extrabold tracking-tight text-emerald-400">
-              <span id="pres" class="metric-val">0.0</span><span class="text-xl text-slate-400"> hPa</span>
+        <!-- 7. UV Index -->
+        <div onclick="selectMetric('uv'); ripple(event, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMetric('uv');}" tabindex="0" role="button" aria-label="Tampilkan UV Index pada grafik" id="card-uv" style="--i:6"
+          class="glass-card metric-card mc-uv rounded-3xl p-5 cursor-pointer relative overflow-hidden min-h-[250px]" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+          <div class="fx fx-sun fx-uv"><div class="rays"></div></div>
+          <div class="relative z-10 flex flex-col h-full justify-between gap-1">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">UV Index</span>
+              <span class="ico text-2xl">🔆</span>
             </div>
-          </div>
-          <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
-            <div id="pres-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            <div class="my-2">
+              <div class="val-wrap text-4xl font-extrabold tracking-tight text-pink-400">
+                <span id="uv" class="metric-val">0.0</span><span class="text-xl text-slate-400"> idx</span>
+              </div>
+              <div class="flex items-center justify-between mt-1.5 gap-2">
+                <span id="uv-badge" class="badge tone-muted">Menunggu data</span>
+                <span id="uv-trend" class="trend">●</span>
+              </div>
+            </div>
+            <svg id="uv-spark" class="spark text-pink-400" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+              <path class="spark-fill" d=""/><path class="spark-line" d=""/>
+            </svg>
+            <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="uv-bar" class="bar-fill bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
           </div>
         </div>
 
-              </main>
+        <!-- 8. Tegangan UV -->
+        <div onclick="selectMetric('uvmv'); ripple(event, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMetric('uvmv');}" tabindex="0" role="button" aria-label="Tampilkan Tegangan UV pada grafik" id="card-uvmv" style="--i:7"
+          class="glass-card metric-card mc-uvmv rounded-3xl p-5 cursor-pointer relative overflow-hidden min-h-[250px]" onmousemove="cardTilt(event, this)" onmouseleave="resetTilt(this)">
+          <div class="fx fx-volt"><svg viewBox="0 0 120 40" preserveAspectRatio="none"><polyline points="0,20 14,20 22,5 32,35 42,11 50,27 58,20 120,20"/></svg></div>
+          <div class="relative z-10 flex flex-col h-full justify-between gap-1">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Tegangan UV</span>
+              <span class="ico text-2xl">⚡</span>
+            </div>
+            <div class="my-2">
+              <div class="val-wrap text-4xl font-extrabold tracking-tight text-indigo-400">
+                <span id="uvmv" class="metric-val">0</span><span class="text-xl text-slate-400"> mV</span>
+              </div>
+              <div class="flex items-center justify-between mt-1.5 gap-2">
+                <span id="uvmv-badge" class="badge tone-muted">Menunggu data</span>
+                <span id="uvmv-trend" class="trend">●</span>
+              </div>
+            </div>
+            <svg id="uvmv-spark" class="spark text-indigo-400" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+              <path class="spark-fill" d=""/><path class="spark-line" d=""/>
+            </svg>
+            <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="uvmv-bar" class="bar-fill bg-gradient-to-r from-indigo-500 to-violet-400 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+      </main>
     </section>
 
     <!-- 3. GRAFIK MONITORING SECTION (TELAH DIPERBAIKI) -->
@@ -318,12 +512,12 @@
         <div class="flex flex-wrap bg-slate-950/70 p-1.5 rounded-2xl border border-slate-800/80 gap-1">
           <button onclick="selectMetric('temp')" id="btn-temp" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-500 text-slate-950 transition">Suhu</button>
           <button onclick="selectMetric('hum')" id="btn-hum" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Kelembapan</button>
+          <button onclick="selectMetric('rain')" id="btn-rain" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Hujan</button>
           <button onclick="selectMetric('light')" id="btn-light" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Cahaya</button>
           <button onclick="selectMetric('fire')" id="btn-fire" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Api</button>
           <button onclick="selectMetric('dist')" id="btn-dist" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Jarak</button>
-          <button onclick="selectMetric('rain')" id="btn-rain" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Hujan</button>
-          <button onclick="selectMetric('uv')" id="btn-uv" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">UV</button>
-          <button onclick="selectMetric('pres')" id="btn-pres" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Tekanan</button>
+          <button onclick="selectMetric('uv')" id="btn-uv" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">UV Index</button>
+          <button onclick="selectMetric('uvmv')" id="btn-uvmv" class="metric-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">UV (mV)</button>
         </div>
       </div>
 
@@ -349,8 +543,8 @@
           </summary>
           <div class="px-4 pb-4 text-xs md:text-sm text-slate-400 leading-relaxed">
             Web ini adalah dashboard pemantauan stasiun cuaca otomatis (Automatic Weather Station) milik
-            SMA Darul Ulum 1 Unggulan BPPT Jombang. Modul ESP32 membaca 6 sensor, yaitu suhu, kelembapan,
-            intensitas cahaya, api, jarak ultrasonik, dan hujan. Datanya dikirim lewat Wi-Fi ke database Supabase,
+            SMA Darul Ulum 1 Unggulan BPPT Jombang. Modul ESP32 membaca 6 sensor (DHT11, LDR, api, ultrasonik, hujan, dan UV) yang menghasilkan
+            8 data: suhu, kelembapan, hujan, cahaya, api, jarak, UV index, dan tegangan UV. Datanya dikirim lewat Wi-Fi ke database Supabase,
             lalu ditampilkan di web ini secara real-time dalam bentuk kartu angka dan grafik.
           </div>
         </details>
@@ -419,10 +613,8 @@
                   <tr class="border-b border-slate-800/70"><td class="py-2 pr-3">8 – 10.9</td><td class="pr-3">Sangat tinggi</td><td>Kulit cepat terbakar</td></tr>
                   <tr><td class="py-2 pr-3">≥ 11</td><td class="pr-3">Ekstrem</td><td>Hindari berada di luar</td></tr>
 
-                  <!-- Tekanan -->
-                  <tr class="border-t-2 border-slate-700"><td rowspan="3" class="py-2 pr-3 align-top font-semibold text-slate-100">🧭 Tekanan<br><span class="text-[10px] text-slate-500">GY-BMP280</span></td><td class="py-2 pr-3">&lt; 1005</td><td rowspan="3" class="pr-3 align-top">hPa</td><td class="pr-3">Rendah</td><td>Cenderung mendung atau hujan</td></tr>
-                  <tr class="border-b border-slate-800/70"><td class="py-2 pr-3">1005 – 1020</td><td class="pr-3">Normal</td><td>Cuaca stabil</td></tr>
-                  <tr><td class="py-2 pr-3">&gt; 1020</td><td class="pr-3">Tinggi</td><td>Biasanya cerah</td></tr>
+                  <!-- Tegangan UV -->
+                  <tr class="border-t-2 border-slate-700"><td class="py-2 pr-3 align-top font-semibold text-slate-100">⚡ Tegangan UV<br><span class="text-[10px] text-slate-500">GUVA-S12SD</span></td><td class="py-2 pr-3">0 – 3100</td><td class="pr-3 align-top">mV</td><td class="pr-3">Sinyal mentah</td><td>UV Index ≈ tegangan ÷ 100</td></tr>
 
                 </tbody>
               </table>
@@ -506,15 +698,15 @@
       fire: { label: 'Sensor Api (ADC)',           color: '#fb923c', bg: 'rgba(251, 146, 60, 0.15)' },
       dist: { label: 'Jarak Ultrasonik (cm)',      color: '#c084fc', bg: 'rgba(192, 132, 252, 0.15)' },
       uv:   { label: 'UV Index',                   color: '#f472b6', bg: 'rgba(244, 114, 182, 0.15)' },
-      pres: { label: 'Tekanan Udara (hPa)',        color: '#34d399', bg: 'rgba(52, 211, 153, 0.15)' }
+      uvmv: { label: 'Tegangan UV (mV)',           color: '#818cf8', bg: 'rgba(129, 140, 248, 0.15)' }
     };
 
     // Riwayat data untuk grafik
     const historyData = {
       labels: [],
-      temp: [], hum: [], light: [], rain: [], fire: [], dist: [], uv: [], pres: []
+      temp: [], hum: [], light: [], rain: [], fire: [], dist: [], uv: [], uvmv: []
     };
-    const METRIC_KEYS = ['temp', 'hum', 'light', 'rain', 'fire', 'dist', 'uv', 'pres'];
+    const METRIC_KEYS = ['temp', 'hum', 'light', 'rain', 'fire', 'dist', 'uv', 'uvmv'];
 
     // -------------------------------------------------------------
     // WAKTU & TANGGAL INTERAKTIF REALTIME
@@ -556,6 +748,8 @@
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
+      card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+      card.style.setProperty('--my', `${e.clientY - rect.top}px`);
       card.style.transform = `perspective(1000px) rotateX(${-y / 15}deg) rotateY(${x / 15}deg) scale3d(1.02, 1.02, 1.02)`;
     }
 
@@ -770,7 +964,7 @@ async function manualSync() {
         // ESP32 mengirim -1 kalau jarak tidak terbaca
         dist:  (jarak === null || jarak < 0) ? null : jarak,
         uv:    num(row.uv_index),
-        pres:  num(row.tekanan)
+        uvmv:  num(row.uv_mv)
       };
     }
 
@@ -782,7 +976,7 @@ async function manualSync() {
       fire:  { dec: 0, bar: v => (ADC_MAX - v) / ADC_MAX * 100 },
       dist:  { dec: 1, bar: v => v / 400 * 100 },
       uv:    { dec: 1, bar: v => v / 11 * 100 },
-      pres:  { dec: 1, bar: v => (v - 950) / 100 * 100 }
+      uvmv:  { dec: 0, bar: v => v / 1100 * 100 }
     };
 
     function renderCards(vals) {
@@ -794,29 +988,162 @@ async function manualSync() {
         if (v === null) {
           el.innerText = '--';
           if (bar) bar.style.width = '0%';
-          return;
-        }
-        const meta = CARD_META[key];
-        animateValue(key, parseFloat(el.innerText) || 0, v, 800, meta.dec);
-        if (bar) bar.style.width = `${Math.max(0, Math.min(meta.bar(v), 100))}%`;
-      });
-
-      const fs = document.getElementById('fire-status');
-      if (fs) {
-        if (vals.fire === null) {
-          fs.innerText = 'Status: --';
-          fs.className = 'text-xs text-slate-400 font-semibold mt-0.5';
-        } else if (vals.fire < FIRE_THRESHOLD) {
-          fs.innerText = 'Status: API TERDETEKSI 🔥';
-          fs.className = 'text-xs text-red-400 font-semibold mt-0.5';
         } else {
-          fs.innerText = 'Status: Aman ✅';
-          fs.className = 'text-xs text-emerald-400 font-semibold mt-0.5';
+          const meta = CARD_META[key];
+          animateValue(key, parseFloat(el.innerText) || 0, v, 800, meta.dec);
+          if (bar) bar.style.width = `${Math.max(0, Math.min(meta.bar(v), 100))}%`;
+          const wrap = el.parentElement;
+          wrap.classList.remove('val-flash'); void wrap.offsetWidth; wrap.classList.add('val-flash');
+        }
+        updateBadge(key, v);
+        updateTrend(key);
+        updateSpark(key);
+        updateFx(key, v);
+      });
+    }
+
+    // ---------- Status teks tiap kartu ----------
+    function levelUV(v) {
+      if (v < 3)  return ['Rendah', 'tone-ok'];
+      if (v < 6)  return ['Sedang', 'tone-warn'];
+      if (v < 8)  return ['Tinggi', 'tone-hot'];
+      if (v < 11) return ['Sangat tinggi', 'tone-bad'];
+      return ['Ekstrem', 'tone-bad'];
+    }
+    const BADGE = {
+      temp:  v => v < 24 ? ['Sejuk', 'tone-info'] : v <= 31 ? ['Normal', 'tone-ok'] : v <= 35 ? ['Hangat', 'tone-warn'] : ['Panas', 'tone-bad'],
+      hum:   v => v < 40 ? ['Kering', 'tone-warn'] : v <= 70 ? ['Nyaman', 'tone-ok'] : ['Lembap', 'tone-info'],
+      rain:  v => v < 15 ? ['Tidak hujan', 'tone-ok'] : v <= 50 ? ['Gerimis', 'tone-info'] : v <= 75 ? ['Hujan sedang', 'tone-info'] : ['Hujan deras', 'tone-warn'],
+      light: v => v < 1200 ? ['Gelap', 'tone-info'] : v < 2800 ? ['Sedang', 'tone-ok'] : ['Terang', 'tone-warn'],
+      fire:  v => v < FIRE_THRESHOLD ? ['API TERDETEKSI 🔥', 'tone-bad'] : ['Aman ✅', 'tone-ok'],
+      dist:  v => v < 10 ? ['Sangat dekat', 'tone-warn'] : ['Terbaca', 'tone-ok'],
+      uv:    v => levelUV(v),
+      uvmv:  v => [`Setara UV ${(v / 100).toFixed(1)}`, 'tone-info']
+    };
+    function updateBadge(key, v) {
+      const b = document.getElementById(`${key}-badge`);
+      if (!b) return;
+      const [txt, tone] = v === null ? [key === 'dist' ? 'Tidak terbaca' : 'Tidak ada data', 'tone-muted'] : BADGE[key](v);
+      b.innerText = txt;
+      b.className = `badge ${tone}`;
+    }
+
+    // ---------- Panah tren (dibanding data sebelumnya) ----------
+    function updateTrend(key) {
+      const t = document.getElementById(`${key}-trend`);
+      const h = historyData[key];
+      if (!t) return;
+      const cur = h[h.length - 1], prev = h[h.length - 2];
+      let cls = 'trend', txt = '● stabil';
+      if (cur !== null && cur !== undefined && prev !== null && prev !== undefined) {
+        const dec = CARD_META[key].dec, diff = cur - prev;
+        if (Math.abs(diff) >= Math.pow(10, -dec) / 2) {
+          cls += diff > 0 ? ' up' : ' down';
+          txt = `${diff > 0 ? '▲ +' : '▼ −'}${Math.abs(diff).toFixed(dec)}`;
+        }
+      }
+      if (t.innerText !== txt) cls += ' pop';
+      t.className = cls;
+      t.innerText = txt;
+    }
+
+    // ---------- Sparkline mini ----------
+    function updateSpark(key) {
+      const svg = document.getElementById(`${key}-spark`);
+      if (!svg) return;
+      const pts = historyData[key].map((v, i) => ({ v, i })).filter(p => p.v !== null && p.v !== undefined);
+      const line = svg.querySelector('.spark-line'), fill = svg.querySelector('.spark-fill');
+      if (!pts.length) { line.setAttribute('d', ''); fill.setAttribute('d', ''); return; }
+      const n = Math.max(historyData[key].length - 1, 1);
+      const min = Math.min(...pts.map(p => p.v)), max = Math.max(...pts.map(p => p.v));
+      const span = (max - min) || 1;
+      const xy = pts.map(p => [(p.i / n) * 100, 24 - ((p.v - min) / span) * 20]);
+      if (xy.length === 1) xy.push([100, xy[0][1]]);
+      const d = xy.map((c, i) => `${i ? 'L' : 'M'}${c[0].toFixed(1)} ${c[1].toFixed(1)}`).join(' ');
+      line.setAttribute('d', d);
+      fill.setAttribute('d', `${d} L${xy[xy.length - 1][0].toFixed(1)} 28 L${xy[0][0].toFixed(1)} 28 Z`);
+    }
+
+    // ---------- Efek visual khusus tiap kartu ----------
+    const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+    function heatColor(p) {   // 0 = sejuk (cyan) -> 0.5 = hangat (kuning) -> 1 = panas (merah)
+      const S = [[34, 211, 238], [251, 191, 36], [239, 68, 68]];
+      const t = p * 2, i = t >= 1 ? 1 : 0, f = t - i;
+      const c = S[i].map((a, k) => Math.round(a + (S[i + 1][k] - a) * f));
+      return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+    }
+    function updateFx(key, v) {
+      const card = document.getElementById(`card-${key}`);
+      if (!card) return;
+      const has = v !== null && v !== undefined;
+      const set = (n, val) => card.style.setProperty(n, val);
+      switch (key) {
+        case 'temp': {
+          const p = has ? clamp((v - 15) / 25, 0, 1) : 0;
+          set('--lvl', (p * 100).toFixed(0));
+          set('--glow', heatColor(p));
+          break;
+        }
+        case 'hum': set('--lvl', has ? clamp(v, 0, 100) : 0); break;
+        case 'rain': {
+          const r = has ? clamp(v / 100, 0, 1) : 0;
+          set('--rain', r.toFixed(2));
+          const drops = card.querySelectorAll('.drop');
+          const show = Math.ceil(r * drops.length);
+          drops.forEach((d, i) => d.style.visibility = i < show ? 'visible' : 'hidden');
+          card.classList.toggle('splash', r > 0.5);
+          break;
+        }
+        case 'light': set('--o', has ? (0.12 + 0.78 * clamp(v / ADC_MAX, 0, 1)).toFixed(2) : 0.1); break;
+        case 'fire': {
+          const bahaya = has && v < FIRE_THRESHOLD;
+          set('--fire', bahaya ? 1 : has ? (0.08 + 0.25 * (ADC_MAX - v) / ADC_MAX).toFixed(2) : 0.05);
+          card.classList.toggle('alert', bahaya);
+          break;
+        }
+        case 'dist': set('--ping', has ? `${(1.2 + clamp(v / 400, 0, 1) * 1.8).toFixed(1)}s` : '3s'); break;
+        case 'uv': {
+          const p = has ? clamp(v / 11, 0, 1) : 0;
+          set('--o', (0.1 + 0.8 * p).toFixed(2));
+          set('--spin', `${(30 - 22 * p).toFixed(0)}s`);
+          set('--ray', p < 0.27 ? '251,191,36' : p < 0.55 ? '251,146,60' : '244,63,94');
+          break;
+        }
+        case 'uvmv': {
+          const p = has ? clamp(v / 1100, 0, 1) : 0;
+          set('--volt', (0.15 + 0.75 * p).toFixed(2));
+          set('--vspd', `${(3 - 2 * p).toFixed(1)}s`);
+          break;
         }
       }
     }
 
-    function addHistory(row) {
+    // ---------- Riak klik kartu ----------
+    function ripple(e, card) {
+      const r = card.getBoundingClientRect();
+      const size = Math.max(r.width, r.height) * 2;
+      const s = document.createElement('span');
+      s.className = 'ripple';
+      s.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left - size / 2}px;top:${e.clientY - r.top - size / 2}px`;
+      card.appendChild(s);
+      setTimeout(() => s.remove(), 750);
+    }
+
+    // ---------- Siapkan tetes hujan ----------
+    window.addEventListener('DOMContentLoaded', () => {
+      const box = document.getElementById('rain-drops');
+      if (!box) return;
+      for (let i = 0; i < 24; i++) {
+        const d = document.createElement('span');
+        d.className = 'drop';
+        d.style.left = `${(i * 37 + 8) % 96}%`;
+        d.style.animationDelay = `${-((i * 0.37) % 1.5).toFixed(2)}s`;
+        d.style.visibility = 'hidden';
+        box.appendChild(d);
+      }
+    });
+
+        function addHistory(row) {
       const vals = toValues(row);
       const time = new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       historyData.labels.push(time);

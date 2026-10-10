@@ -136,8 +136,8 @@
     <div class="flex flex-wrap items-center gap-3">
       <a href="GRAFIK_1.1.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-xs font-semibold text-cyan-300 border border-slate-800 hover:border-cyan-500/40 transition">📡 Pindah ke Grafik 1 →</a>
       <div class="px-3.5 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-semibold text-slate-300 flex items-center gap-2">
-        <span id="status-dot" class="w-2 h-2 rounded-full bg-slate-500 animate-pulse"></span>
-        <span id="status-text">Menghubungkan ke Supabase...</span>
+        <span id="status-dot" class="w-2 h-2 rounded-full bg-red-500"></span>
+        <span id="status-text">ESP32 #2 OFFLINE</span>
       </div>
       <a href="https://www.google.com/maps/search/?api=1&query=SMA+Darul+Ulum+1+Unggulan+BPPT+Jombang"
         target="_blank" rel="noopener" title="Lihat di Google Maps"
@@ -297,7 +297,7 @@
         <summary class="flex justify-between cursor-pointer list-none p-4 text-sm font-semibold hover:text-cyan-300">
           <span>4. Cara membaca halaman ini</span><span class="text-cyan-400 group-open:rotate-180 transition-transform">▾</span></summary>
         <div class="px-4 pb-4 text-xs md:text-sm text-slate-400 leading-relaxed">
-          Indikator di kanan atas: <span class="text-cyan-400">LIVE</span> berarti data sedang masuk, <span class="text-amber-400">MENUNGGU DATA</span> berarti data terlambat, <span class="text-red-400">OFFLINE</span> berarti sudah lama tidak ada data. Grafik menampilkan 12 data terakhir. Klik kartu atau tombol di atas grafik untuk berpindah sensor.
+          Indikator di kanan atas: <span class="text-emerald-400">LIVE</span> berarti data sedang masuk, <span class="text-red-400">OFFLINE</span> berarti tidak ada data baru lebih dari 45 detik. Grafik menampilkan 12 data terakhir. Klik kartu atau tombol di atas grafik untuk berpindah sensor.
         </div>
       </details>
     </div>
@@ -351,7 +351,8 @@
   const TABLE_NAME   = 'sensor_data_2';      // tabel khusus ESP32 #2
 
   const ADC_MAX = 4095, MAX_POINTS = 12;
-  const LIVE_AFTER = 30000, OFFLINE_AFTER = 180000;
+  // Hanya dua status: LIVE (ada data baru) atau OFFLINE (tidak ada data baru selama batas ini).
+  const OFFLINE_AFTER = 45000;   // ms
   const KEYS = ['tanah', 'mq', 'ldr', 'relay'];
 
   const chartConfig = {
@@ -491,13 +492,13 @@
   async function loadHistory() {
     const { data, error } = await db
       .from(TABLE_NAME)
-      .select('created_at, tanah, mq135, ldr, relay, tanah_kering, udara_tercemar')
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(MAX_POINTS);
 
     if (error) {
       console.error('[Supabase] Gagal memuat riwayat:', error);
-      document.getElementById('status-text').innerText = 'Gagal memuat data dari Supabase';
+      updateStatusPill();   // tanpa data -> tampil OFFLINE
       return;
     }
 
@@ -510,9 +511,11 @@
         addHistory(row);
       });
 
-      renderCards(toValues(rows[rows.length - 1]));
+      const terakhir = rows[rows.length - 1];
+      if (terakhir.id !== undefined && terakhir.id !== null) lastRowId = Math.max(lastRowId, Number(terakhir.id));
+      renderCards(toValues(terakhir));
       refreshChart();
-      setStatusTime(rows[rows.length - 1].created_at);
+      setStatusTime(terakhir.created_at);
     }
   }
 
@@ -563,49 +566,69 @@
   });
 
   // ---------- STATUS ----------
+  // Indikator status ESP32: hanya LIVE (hijau) atau OFFLINE (merah)
+  let lastRowId = 0;
+
   function updateStatusPill() {
     const dot = document.getElementById('status-dot'), txt = document.getElementById('status-text');
     if(!dot || !txt) return;
-    if (!lastDataTime) { txt.innerText = 'Menunggu data ESP32 #2...'; return; }
-    const age = Date.now() - lastDataTime;
-    const jam = new Date(lastDataTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    if (age <= LIVE_AFTER) { dot.className = 'w-2 h-2 rounded-full bg-cyan-400 animate-pulse'; txt.innerText = `ESP32 #2 LIVE • ${jam}`; }
-    else if (age <= OFFLINE_AFTER) { dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse'; txt.innerText = `ESP32 #2 MENUNGGU DATA • terakhir ${jam}`; }
-    else { dot.className = 'w-2 h-2 rounded-full bg-red-500'; txt.innerText = `ESP32 #2 OFFLINE • terakhir ${jam}`; }
+    const age = lastDataTime ? Date.now() - lastDataTime : Infinity;
+    const jam = lastDataTime
+      ? new Date(lastDataTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      : '';
+    if (age <= OFFLINE_AFTER) {
+      dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+      txt.innerText = `ESP32 #2 LIVE • ${jam}`;
+    } else {
+      dot.className = 'w-2 h-2 rounded-full bg-red-500';
+      txt.innerText = jam ? `ESP32 #2 OFFLINE • terakhir ${jam}` : 'ESP32 #2 OFFLINE';
+    }
   }
   function setStatusTime(t) { lastDataTime = new Date(t).getTime(); updateStatusPill(); }
 
+  // Terapkan 1 baris data baru ke kartu, grafik, dan status.
+  // Dipanggil oleh Realtime DAN polling; baris yang sama tidak diproses dua kali.
+  function terapkanBaris(row) {
+    if (!row) return false;
+    const t = new Date(row.created_at).getTime();
+    const punyaId = row.id !== undefined && row.id !== null;
+    const idBaru = punyaId && Number(row.id) > lastRowId;
+    if (!idBaru && !(t > lastDataTime)) return false;   // sudah pernah ditampilkan
+    if (punyaId) lastRowId = Math.max(lastRowId, Number(row.id));
+    addHistory(row);
+    renderCards(toValues(row));
+    refreshChart();
+    setStatusTime(row.created_at);
+    return true;
+  }
+
+  // Cadangan: tanya data terbaru ke Supabase tiap 3 detik.
+  // Menjamin web tetap update walau koneksi Realtime putus.
+  let sedangCek = false;
   async function cekDataTerbaru() {
+    if (sedangCek) return;
+    sedangCek = true;
     try {
       const { data, error } = await db
         .from(TABLE_NAME)
-        .select('created_at, tanah, mq135, ldr, relay, tanah_kering, udara_tercemar')
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(1);
-
-      if (error) return;
-      if (!data || data.length === 0) return;
-
-      const row = data[0];
-      const newestTime = new Date(row.created_at).getTime();
-
-      if (!lastDataTime || newestTime > lastDataTime) {
-        await loadHistory();
-      }
+      if (error || !data || data.length === 0) return;
+      terapkanBaris(data[0]);
     } catch (e) {
       console.error(e);
+    } finally {
+      sedangCek = false;
     }
   }
 
   function startRealtime() {
     db.channel('sensor-live-2')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE_NAME }, (payload) => {
-        addHistory(payload.new);
-        renderCards(toValues(payload.new));
-        refreshChart();
-        setStatusTime(payload.new.created_at);
+        terapkanBaris(payload.new);
       })
-      .subscribe();
+      .subscribe(status => console.log('Realtime Supabase #2:', status));
   }
 
   async function manualSync() {
@@ -631,13 +654,13 @@
     try { 
       await loadHistory(); 
     }
-    catch (e) { 
-      const txt = document.getElementById('status-text');
-      if(txt) txt.innerText = 'Gagal terhubung ke Supabase'; 
+    catch (e) {
+      console.error(e);
+      updateStatusPill();   // tanpa data -> tampil OFFLINE
     }
     startRealtime();
-    setInterval(updateStatusPill, 5000);
-    setInterval(cekDataTerbaru, 15000);
+    setInterval(updateStatusPill, 1000);   // LIVE berubah ke OFFLINE tepat waktu
+    setInterval(cekDataTerbaru, 3000);     // cadangan realtime
   });
 </script>
 <script id="fx-layer">

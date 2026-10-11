@@ -429,6 +429,7 @@ html {
     <a href="#info-sensor"     data-nav-item data-sec="info-sensor"     class="nav-link"><span class="nav-ico">⚡</span>Sensor</a>
     <a href="#cara-kerja"      data-nav-item data-sec="cara-kerja"      class="nav-link"><span class="nav-ico">🛠️</span>Cara Kerja</a>
     <a href="#manfaat-dampak"  data-nav-item data-sec="manfaat-dampak"  class="nav-link"><span class="nav-ico">🌍</span>Manfaat</a>
+    <a href="#sdgs"            data-nav-item data-sec="sdgs"            class="nav-link"><span class="nav-ico">🎯</span>SDGs</a>
     <a href="#galeri"          data-nav-item data-sec="galeri"          class="nav-link"><span class="nav-ico">📸</span>Dokumentasi</a>
 
     <!-- PUSAT KONTROL + DROPDOWN ESP 1 / ESP 2 -->
@@ -479,6 +480,7 @@ html {
     <a href="#info-sensor" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Info Sensor</a>
     <a href="#cara-kerja" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Cara Kerja</a>
     <a href="#manfaat-dampak" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Manfaat &amp; Dampak</a>
+    <a href="#sdgs" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">SDGs</a>
     <a href="#galeri" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Galeri</a>
     <div class="px-4 pt-2 pb-1 text-xs uppercase tracking-wider text-slate-500">Pusat Kontrol</div>
     <a href="GRAFIK_1.1.html" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">📡 Menara Data 1</a>
@@ -1702,6 +1704,420 @@ html {
   </div>
 </section>
 
+<!-- ========== SDGs 9 · 11 · 13 · 15 (SECTION BARU) — mulai ========== -->
+<style>
+/* ===== SDGs (semua class diawali sg-) ===== */
+#sdgs { scroll-margin-top: 100px; }
+#main-nav > :nth-child(8){ animation-delay:.35s } #main-nav > :nth-child(9){ animation-delay:.40s }
+/* 8 menu di layar sedang (tablet): rapatkan sedikit supaya teks tidak terpotong */
+@media (min-width:768px) and (max-width:1023px){ #main-nav { font-size:.72rem; } #main-nav .nav-link { gap:.25rem; padding-left:.25rem; padding-right:.25rem; } }
+.sg-wrap { margin-top:2rem; background:rgba(15,23,42,.6); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border-radius:1rem; padding:1.5rem; border:1px solid #1e293b; color:#cbd5e1; position:relative; overflow:hidden; }
+.sg-orb { position:absolute; width:260px; height:260px; border-radius:50%; filter:blur(70px); opacity:.28; pointer-events:none; transition:background .6s; top:-90px; right:-70px; background:var(--sg,#22d3ee); }
+.sg-intro { text-align:center; font-size:.85rem; line-height:1.7; color:#94a3b8; max-width:640px; margin:-.4rem auto 1.4rem; }
+.sg-sub { font-family:'Orbitron',sans-serif; font-size:.9rem; letter-spacing:.06em; color:#e0f2fe; margin:2.2rem 0 .9rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+.sg-sub small { font-family:'Plus Jakarta Sans',sans-serif; font-size:.68rem; color:#64748b; font-style:italic; letter-spacing:0; }
+.sg-note { font-size:.68rem; color:#64748b; font-style:italic; margin-top:.5rem; line-height:1.5; }
+
+/* ---- 4 kartu tujuan ---- */
+.sg-tiles { display:grid; grid-template-columns:repeat(2,1fr); gap:.7rem; position:relative; z-index:1; }
+@media (min-width:768px){ .sg-tiles { grid-template-columns:repeat(4,1fr); } }
+.sg-tile { position:relative; text-align:left; padding:.9rem .9rem 1rem; border-radius:1rem; background:linear-gradient(150deg,rgba(30,41,59,.85),rgba(15,23,42,.92)); border:1px solid rgba(100,116,139,.35); cursor:pointer; overflow:hidden; transition:transform .3s cubic-bezier(.3,1.4,.5,1), border-color .3s, box-shadow .3s; }
+.sg-tile::before { content:''; position:absolute; inset:0 0 auto 0; height:4px; background:var(--c); opacity:.55; transition:opacity .3s, height .3s; }
+.sg-tile:hover { transform:translateY(-4px); border-color:var(--c); }
+.sg-tile.on { transform:translateY(-4px); border-color:var(--c); box-shadow:0 0 28px var(--g), inset 0 0 22px var(--g); }
+.sg-tile.on::before { opacity:1; height:6px; }
+.sg-num { font-family:'Orbitron',sans-serif; font-weight:800; font-size:2.1rem; line-height:1; color:var(--t); text-shadow:0 0 18px var(--g); }
+.sg-ico { position:absolute; right:.7rem; top:.8rem; font-size:1.9rem; transition:transform .4s cubic-bezier(.3,1.6,.5,1); filter:drop-shadow(0 0 10px var(--g)); }
+.sg-tile:hover .sg-ico, .sg-tile.on .sg-ico { transform:scale(1.25) rotate(-8deg); }
+.sg-tname { display:block; margin-top:.55rem; font-size:.78rem; font-weight:700; color:#e2e8f0; line-height:1.3; }
+
+/* ---- panel detail ---- */
+.sg-panel { margin-top:1rem; border-radius:1rem; padding:1.1rem; background:rgba(30,41,59,.55); border:1px solid var(--c); box-shadow:0 0 24px var(--g); position:relative; z-index:1; transition:border-color .4s, box-shadow .4s; }
+.sg-panel.pop > * { animation:sgPop .5s cubic-bezier(.2,.8,.2,1) both; }
+.sg-panel.pop > *:nth-child(2){ animation-delay:.05s } .sg-panel.pop > *:nth-child(3){ animation-delay:.1s } .sg-panel.pop > *:nth-child(4){ animation-delay:.15s }
+@keyframes sgPop { from{ opacity:0; transform:translateY(14px) scale(.98); } to{ opacity:1; transform:none; } }
+.sg-phead { display:flex; align-items:center; gap:.9rem; flex-wrap:wrap; }
+.sg-badge { font-family:'Orbitron',sans-serif; font-weight:800; font-size:1.6rem; width:56px; height:56px; border-radius:.9rem; display:flex; align-items:center; justify-content:center; color:#0b1220; background:var(--c); box-shadow:0 0 22px var(--g); }
+.sg-ptitle { font-size:1.1rem; font-weight:800; color:#f1f5f9; line-height:1.25; }
+.sg-ptag { font-size:.78rem; color:var(--t); margin-top:.1rem; }
+.sg-target { margin-top:.8rem; font-size:.76rem; line-height:1.6; color:#cbd5e1; border-left:3px solid var(--c); padding:.3rem .8rem; background:rgba(15,23,42,.5); border-radius:0 .6rem .6rem 0; }
+.sg-target b { color:var(--t); }
+.sg-cards { display:grid; grid-template-columns:1fr; gap:.7rem; margin-top:.9rem; }
+@media (min-width:768px){ .sg-cards { grid-template-columns:repeat(3,1fr); } }
+.sg-card { padding:.95rem; border-radius:1rem; background:rgba(15,23,42,.6); border:1px solid rgba(100,116,139,.3); font-size:.8rem; line-height:1.6; transition:transform .3s, border-color .3s; }
+.sg-card:hover { transform:translateY(-3px); border-color:var(--c); }
+.sg-card .e { display:block; font-size:1.7rem; margin-bottom:.25rem; }
+.sg-card b { display:block; color:#f1f5f9; font-size:.86rem; margin-bottom:.2rem; }
+.sg-card i { display:block; margin-top:.45rem; font-style:normal; font-size:.66rem; color:var(--t); letter-spacing:.04em; }
+.sg-honest { margin-top:.8rem; font-size:.74rem; line-height:1.6; color:#fde68a; background:rgba(251,191,36,.07); border:1px dashed rgba(251,191,36,.4); border-radius:.7rem; padding:.5rem .8rem; }
+
+/* ---- peta sensor ---- */
+.sg-chips { display:flex; flex-wrap:wrap; gap:.4rem; position:relative; z-index:1; }
+.sg-chip { padding:.35rem .7rem; border-radius:9999px; font-size:.72rem; font-weight:700; color:#64748b; background:rgba(30,41,59,.6); border:1px solid rgba(100,116,139,.3); transition:all .35s cubic-bezier(.3,1.4,.5,1); opacity:.55; }
+.sg-chip.hit { opacity:1; color:#0b1220; background:var(--c); border-color:transparent; box-shadow:0 0 16px var(--g); transform:translateY(-3px) scale(1.06); }
+
+/* ---- game ---- */
+.sg-game { border-radius:1rem; padding:1.1rem; background:rgba(30,41,59,.55); border:1px solid rgba(100,116,139,.3); position:relative; z-index:1; }
+.sg-gtop { display:flex; justify-content:space-between; align-items:center; gap:.6rem; flex-wrap:wrap; font-size:.74rem; color:#94a3b8; margin-bottom:.8rem; }
+.sg-gtop b { color:#fde047; }
+.sg-gbar { height:6px; border-radius:9999px; background:rgba(51,65,85,.7); overflow:hidden; margin-bottom:1rem; }
+.sg-gbar i { display:block; height:100%; width:0; background:linear-gradient(90deg,#22d3ee,#60a5fa,#a78bfa); transition:width .4s; }
+.sg-q { text-align:center; }
+.sg-qe { font-size:3rem; display:inline-block; animation:sgBob 2.6s ease-in-out infinite; filter:drop-shadow(0 0 14px rgba(34,211,238,.5)); }
+@keyframes sgBob { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-7px) } }
+.sg-qn { font-size:1.05rem; font-weight:800; color:#f1f5f9; margin-top:.2rem; }
+.sg-qd { font-size:.8rem; color:#94a3b8; margin:.3rem auto 1rem; max-width:480px; line-height:1.6; }
+.sg-ans { display:grid; grid-template-columns:repeat(2,1fr); gap:.5rem; max-width:560px; margin:0 auto; }
+@media (min-width:640px){ .sg-ans { grid-template-columns:repeat(4,1fr); } }
+.sg-a { padding:.6rem .4rem; border-radius:.9rem; background:rgba(15,23,42,.7); border:2px solid rgba(100,116,139,.35); color:#e2e8f0; font-size:.7rem; font-weight:700; cursor:pointer; transition:all .25s; line-height:1.3; }
+.sg-a b { display:block; font-family:'Orbitron',sans-serif; font-size:1.25rem; color:var(--t); }
+.sg-a:hover:not(:disabled) { border-color:var(--c); transform:translateY(-3px); box-shadow:0 0 16px var(--g); }
+.sg-a:disabled { cursor:default; }
+.sg-a.ok { border-color:#34d399; background:rgba(16,185,129,.18); animation:sgOk .5s ease; }
+.sg-a.bad { border-color:#f87171; background:rgba(239,68,68,.15); animation:sgShake .45s ease; }
+.sg-a.dim { opacity:.4; }
+@keyframes sgOk { 0%{ transform:scale(1) } 40%{ transform:scale(1.12) } 100%{ transform:scale(1) } }
+@keyframes sgShake { 0%,100%{ transform:translateX(0) } 25%{ transform:translateX(-6px) } 75%{ transform:translateX(6px) } }
+.sg-fb { min-height:4.2em; margin:1rem auto 0; max-width:560px; text-align:center; font-size:.8rem; line-height:1.65; color:#e2e8f0; }
+.sg-fb b { color:#fde047; }
+.sg-gbtns { display:flex; justify-content:center; gap:.5rem; margin-top:.6rem; }
+.sg-btn { padding:.55rem 1.1rem; border-radius:9999px; font-size:.78rem; font-weight:700; color:#0f172a; background:linear-gradient(90deg,#22d3ee,#60a5fa); box-shadow:0 0 18px rgba(34,211,238,.35); border:0; cursor:pointer; transition:transform .2s, box-shadow .2s; }
+.sg-btn:hover { transform:translateY(-2px); box-shadow:0 0 26px rgba(34,211,238,.6); }
+.sg-btn.ghost { color:#cbd5e1; background:rgba(30,41,59,.8); border:1px solid rgba(100,116,139,.45); box-shadow:none; }
+.sg-btn[hidden] { display:none; }
+
+/* ---- aksi hijau ---- */
+.sg-act { border-radius:1rem; padding:1.1rem; background:rgba(30,41,59,.55); border:1px solid rgba(100,116,139,.3); position:relative; z-index:1; }
+.sg-acts { display:grid; grid-template-columns:1fr; gap:.5rem; }
+@media (min-width:640px){ .sg-acts { grid-template-columns:repeat(2,1fr); } }
+.sg-ac { display:flex; align-items:center; gap:.7rem; text-align:left; padding:.65rem .8rem; border-radius:.9rem; background:rgba(15,23,42,.65); border:2px solid rgba(100,116,139,.3); color:#cbd5e1; font-size:.78rem; cursor:pointer; transition:all .25s; }
+.sg-ac .e { font-size:1.5rem; transition:transform .35s cubic-bezier(.3,1.7,.5,1); }
+.sg-ac small { display:block; font-size:.62rem; color:#64748b; margin-top:.1rem; }
+.sg-ac:hover { border-color:rgba(34,211,238,.6); }
+.sg-ac.on { border-color:#34d399; background:rgba(16,185,129,.14); color:#fff; }
+.sg-ac.on .e { transform:scale(1.3) rotate(-10deg); }
+.sg-ac .ck { margin-left:auto; width:22px; height:22px; border-radius:50%; border:2px solid #475569; display:flex; align-items:center; justify-content:center; font-size:.8rem; color:transparent; flex:0 0 auto; transition:all .25s; }
+.sg-ac.on .ck { background:#34d399; border-color:#34d399; color:#052e16; }
+.sg-meters { display:grid; grid-template-columns:1fr; gap:.55rem; margin:1rem 0 .3rem; }
+@media (min-width:640px){ .sg-meters { grid-template-columns:repeat(2,1fr); } }
+.sg-m { font-size:.72rem; color:#94a3b8; }
+.sg-m div.t { display:flex; justify-content:space-between; margin-bottom:.2rem; }
+.sg-m div.t b { color:var(--t); }
+.sg-m div.b { height:9px; border-radius:9999px; background:rgba(51,65,85,.7); overflow:hidden; }
+.sg-m div.b i { display:block; height:100%; width:0; border-radius:9999px; background:var(--c); box-shadow:0 0 12px var(--g); transition:width .6s cubic-bezier(.2,.9,.25,1.1); }
+.sg-win { margin-top:.8rem; padding:.7rem 1rem; border-radius:.9rem; text-align:center; font-size:.82rem; font-weight:700; color:#bbf7d0; background:linear-gradient(90deg,rgba(16,185,129,.2),rgba(34,211,238,.2)); border:1px solid rgba(52,211,153,.5); }
+.sg-win[hidden] { display:none; }
+.sg-win.pop { animation:sgOk .6s ease; }
+
+@media (prefers-reduced-motion:reduce){
+  .sg-qe,.sg-a.ok,.sg-a.bad,.sg-win.pop,.sg-panel.pop > * { animation:none !important; }
+  .sg-tile,.sg-chip,.sg-m div.b i { transition:none !important; }
+}
+</style>
+
+<section id="sdgs" class="sg-wrap mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
+  <div class="sg-orb" id="sg-orb"></div>
+
+  <div class="judul-wrap relative z-10">
+    <div class="judul-ikon">🎯</div>
+    <h3 class="judul-estetik">Mendukung SDGs</h3>
+    <div class="judul-hias"><span></span></div>
+    <p class="subjudul-estetik">Sensor kecil di sekolah, terhubung dengan tujuan besar dunia</p>
+  </div>
+
+  <p class="sg-intro relative z-10">SDGs adalah 17 tujuan pembangunan berkelanjutan yang disepakati dunia untuk tahun 2030. AWS ecoCity™ terhubung dengan empat di antaranya. Pilih salah satu kartu di bawah untuk melihat kaitannya.</p>
+
+  <div class="sg-tiles" id="sg-tiles" role="tablist"></div>
+
+  <div class="sg-panel pop" id="sg-panel">
+    <div class="sg-phead">
+      <div class="sg-badge" id="sg-badge">13</div>
+      <div>
+        <div class="sg-ptitle" id="sg-ptitle"></div>
+        <div class="sg-ptag" id="sg-ptag"></div>
+      </div>
+    </div>
+    <div class="sg-target" id="sg-target"></div>
+    <div class="sg-cards" id="sg-cards"></div>
+    <div class="sg-honest" id="sg-honest"></div>
+  </div>
+
+  <!-- PETA SENSOR -->
+  <h4 class="sg-sub relative z-10">🧭 Peta Sensor <small>sensor dan alat mana yang terhubung dengan tujuan yang kamu pilih?</small></h4>
+  <div class="sg-chips" id="sg-chips"></div>
+
+  <!-- GAME -->
+  <h4 class="sg-sub relative z-10">🎮 Tebak SDG <small>alat ini paling membantu tujuan yang mana?</small></h4>
+  <div class="sg-game" id="sg-game">
+    <div class="sg-gtop"><span>Soal <b id="sg-gn">1</b> / <span id="sg-gt">10</span></span><span>Skor: <b id="sg-gs">0</b> · Beruntun: <b id="sg-gstreak">0</b> 🔥</span></div>
+    <div class="sg-gbar"><i id="sg-gprog"></i></div>
+    <div class="sg-q" id="sg-q">
+      <div class="sg-qe" id="sg-qe">🧠</div>
+      <div class="sg-qn" id="sg-qn"></div>
+      <div class="sg-qd" id="sg-qd"></div>
+      <div class="sg-ans" id="sg-ans"></div>
+      <div class="sg-fb" id="sg-fb" aria-live="polite">Pilih salah satu tujuan di atas.</div>
+      <div class="sg-gbtns">
+        <button type="button" class="sg-btn" id="sg-next" hidden>Lanjut ›</button>
+        <button type="button" class="sg-btn ghost" id="sg-again" hidden>↻ Main lagi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AKSI HIJAU -->
+  <h4 class="sg-sub relative z-10">🌱 Aksi Hijau Kita <small>pilih aksi yang bisa kamu lakukan, lalu lihat tujuan mana yang terdorong</small></h4>
+  <div class="sg-act">
+    <div class="sg-acts" id="sg-acts"></div>
+    <div class="sg-meters" id="sg-meters"></div>
+    <div class="sg-win" id="sg-win" hidden>🎉 Hebat! Kamu sudah memilih semua aksi. Dunia butuh banyak langkah kecil seperti ini.</div>
+    <div class="sg-note">Ini simulasi untuk belajar, bukan perhitungan dampak resmi. Warna tiap tujuan mengacu pada warna SDGs; ikon di halaman ini dibuat sendiri, bukan logo resmi PBB.</div>
+  </div>
+</section>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  if (!$('sdgs')) return;
+
+  /* =========================================================
+     DATA 4 TUJUAN
+     c = warna tujuan, t = versi terang untuk teks, g = cahaya
+     ========================================================= */
+  var SDG = {
+    9: { c:'#F36D25', t:'#ffa36b', g:'rgba(243,109,37,.35)', ico:'🏗️', name:'Industri, Inovasi, dan Infrastruktur', short:'Industri & Inovasi',
+         tag:'Teknologi buatan sendiri untuk belajar dan berkarya',
+         target:'<b>Target 9.5</b>: mendorong riset ilmiah dan inovasi teknologi.',
+         cards:[
+           { e:'🧠', h:'Teknologi IoT buatan sendiri', p:'Dua menara ESP32 membaca 12 parameter dan mengirimnya lewat Wi-Fi. Siswa merakit, memprogram, dan merawatnya sendiri.', s:'ESP32 · semua sensor' },
+           { e:'☁️', h:'Infrastruktur data modern', p:'Data disimpan di database cloud dan tampil realtime di dashboard web yang bisa dibuka dari HP atau komputer.', s:'Database Cloud · Dashboard' },
+           { e:'💡', h:'Murah dan bisa ditiru', p:'Dibangun dari ESP32 dan sensor yang mudah didapat, sehingga sekolah lain bisa membuat versinya sendiri.', s:'Rancangan terbuka untuk ditiru' }
+         ],
+         honest:'Kontribusinya ada di bidang pendidikan sains dan rekayasa tingkat sekolah, bukan industri skala besar.',
+         chips:['esp','cloud','dash','dist'] },
+    11:{ c:'#F99D26', t:'#fcc66b', g:'rgba(249,157,38,.35)', ico:'🏙️', name:'Kota dan Permukiman yang Berkelanjutan', short:'Kota & Permukiman',
+         tag:'Sekolah sebagai “kota kecil” yang lebih sehat dan hemat',
+         target:'<b>Target 11.6</b>: mengurangi dampak lingkungan kota, dengan perhatian khusus pada kualitas udara dan pengelolaan sampah.',
+         cards:[
+           { e:'🌫️', h:'Mengawasi kualitas udara', p:'Sensor gas membantu warga sekolah tahu kapan udara terasa lebih kotor, misalnya karena asap, lalu menyadari polusi di sekitar.', s:'Sensor Kualitas Udara (MQ-135)' },
+           { e:'💡', h:'Lampu yang lebih hemat', p:'Relay mengatur lampu supaya bisa menyala hanya saat dibutuhkan, jadi pemakaian listrik bisa lebih hemat.', s:'Sensor Cahaya · Relay Lampu' },
+           { e:'🌐', h:'Data terbuka untuk warga', p:'Siapa pun bisa melihat data lewat web. Informasi hujan dan UV membantu orang sekitar bersiap sebelum beraktivitas.', s:'Dashboard · Sensor Hujan · UV' }
+         ],
+         honest:'Satu stasiun sekolah tidak mengukur seluruh kota, tetapi ia melatih kebiasaan memantau dan peduli lingkungan sekitar.',
+         chips:['air','relay','light','fire','rain','uv','dash'] },
+    13:{ c:'#3F7E44', t:'#86d98c', g:'rgba(63,126,68,.45)', ico:'🌍', name:'Penanganan Perubahan Iklim', short:'Perubahan Iklim',
+         tag:'Memahami cuaca dan iklim lewat data nyata',
+         target:'<b>Target 13.3</b>: meningkatkan pendidikan, kesadaran, dan kapasitas tentang perubahan iklim, termasuk peringatan dini.',
+         cards:[
+           { e:'🌡️', h:'Memantau cuaca lokal', p:'Suhu, kelembapan, tekanan udara, UV, dan hujan tercatat terus-menerus, sehingga siswa melihat langsung bagaimana cuaca sekolahnya berubah.', s:'Suhu · Lembap · Tekanan · UV · Hujan' },
+           { e:'🚨', h:'Peringatan dini sederhana', p:'Sensor api dan hujan membantu warga sekolah mengenali potensi bahaya lebih cepat, lalu bersiap.', s:'Sensor Api · Sensor Hujan' },
+           { e:'📈', h:'Belajar membaca tren', p:'Rata-rata per jam, per hari, dan 30 hari serta Export CSV memudahkan siswa menganalisis perubahan dari waktu ke waktu.', s:'Dashboard · Export CSV' }
+         ],
+         honest:'Satu stasiun sekolah tidak menurunkan emisi. Kekuatannya ada di edukasi dan kesadaran tentang cuaca dan iklim.',
+         chips:['temp','hum','pres','uv','rain','fire','light','dash'] },
+    15:{ c:'#56C02B', t:'#98e46f', g:'rgba(86,192,43,.4)', ico:'🌳', name:'Ekosistem Daratan', short:'Ekosistem Daratan',
+         tag:'Merawat tanah dan tanaman di lingkungan sekolah',
+         target:'<b>Target 15.3</b> (selaras): menjaga dan memulihkan tanah dan lahan agar tetap sehat.',
+         cards:[
+           { e:'🌱', h:'Tahu kapan tanah haus', p:'Sensor kelembaban tanah menunjukkan tanah masih basah, cukup, atau sudah kering, jadi perawatan tanaman tidak lagi sekadar menebak.', s:'Sensor Kelembaban Tanah' },
+           { e:'💧', h:'Hemat air', p:'Penyiraman bisa mengikuti kondisi tanah, sehingga air tidak terbuang percuma.', s:'Sensor Tanah · Data Dashboard' },
+           { e:'🌦️', h:'Merencanakan perawatan taman', p:'Data hujan dan UV membantu memutuskan kapan taman perlu disiram atau diberi peneduh.', s:'Sensor Hujan · Sensor UV' }
+         ],
+         honest:'Ini dampak skala taman sekolah. Nilainya ada pada kebiasaan merawat tanah dan tanaman berdasarkan data.',
+         chips:['soil','rain','uv'] }
+  };
+  var ORDER = [13, 11, 9, 15];
+
+  var CHIPS = [
+    ['temp','🌡️','Suhu'], ['hum','💧','Kelembapan'], ['pres','🧭','Tekanan'], ['uv','🔆','UV'],
+    ['rain','🌧️','Hujan'], ['fire','🔥','Api'], ['light','☀️','Cahaya'], ['soil','🌱','Tanah'],
+    ['air','🌫️','Udara'], ['relay','💡','Lampu'], ['dist','📏','Jarak'],
+    ['esp','🧠','ESP32'], ['cloud','☁️','Cloud'], ['dash','📱','Dashboard']
+  ];
+
+  /* =========================================================
+     TAB TUJUAN + PANEL + PETA SENSOR
+     ========================================================= */
+  var curSdg = 13;
+  function css(n) {
+    var s = SDG[n];
+    return '--c:' + s.c + ';--t:' + s.t + ';--g:' + s.g;
+  }
+  $('sg-tiles').innerHTML = ORDER.map(function (n) {
+    var s = SDG[n];
+    return '<button type="button" class="sg-tile" data-n="' + n + '" role="tab" aria-selected="false" style="' + css(n) + '">' +
+      '<span class="sg-num">' + n + '</span><span class="sg-ico">' + s.ico + '</span>' +
+      '<span class="sg-tname">' + s.name + '</span></button>';
+  }).join('');
+  $('sg-chips').innerHTML = CHIPS.map(function (c) {
+    return '<span class="sg-chip" data-k="' + c[0] + '">' + c[1] + ' ' + c[2] + '</span>';
+  }).join('');
+
+  function showSdg(n) {
+    curSdg = n;
+    var s = SDG[n];
+    var tiles = document.querySelectorAll('.sg-tile');
+    Array.prototype.forEach.call(tiles, function (t) {
+      var on = Number(t.dataset.n) === n;
+      t.classList.toggle('on', on); t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    var panel = $('sg-panel'), wrap = $('sdgs');
+    panel.style.cssText = css(n);
+    $('sg-orb').style.setProperty('--sg', s.c);
+    $('sg-badge').textContent = n;
+    $('sg-ptitle').textContent = 'SDG ' + n + ' · ' + s.name;
+    $('sg-ptag').textContent = s.tag;
+    $('sg-target').innerHTML = s.target;
+    $('sg-cards').innerHTML = s.cards.map(function (c) {
+      return '<div class="sg-card"><span class="e">' + c.e + '</span><b>' + c.h + '</b>' + c.p + '<i>🔗 ' + c.s + '</i></div>';
+    }).join('');
+    $('sg-honest').textContent = '⚖️ Jujur dan seimbang: ' + s.honest;
+    var chips = $('sg-chips');
+    chips.style.cssText = css(n);
+    Array.prototype.forEach.call(chips.children, function (ch) {
+      ch.classList.toggle('hit', s.chips.indexOf(ch.dataset.k) !== -1);
+    });
+    panel.classList.remove('pop'); void panel.offsetWidth; panel.classList.add('pop');
+  }
+  $('sg-tiles').addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('.sg-tile') : null;
+    if (t) showSdg(Number(t.dataset.n));
+  });
+
+  /* =========================================================
+     GAME: TEBAK SDG
+     ========================================================= */
+  var QS = [
+    { e:'🧠', n:'ESP32', d:'Mini komputer yang membaca sensor lalu mengirim datanya lewat Wi-Fi.', ok:[9],
+      x:'Teknologi dan infrastruktur digital buatan sendiri adalah inti SDG 9 (inovasi).' },
+    { e:'☁️', n:'Database Cloud', d:'Lemari arsip di internet yang menyimpan semua data menara.', ok:[9],
+      x:'Infrastruktur data seperti ini mendukung SDG 9.' },
+    { e:'🌫️', n:'Sensor Kualitas Udara (MQ-135)', d:'Mendeteksi gas dan asap di udara sekolah.', ok:[11],
+      x:'Target 11.6 memberi perhatian khusus pada kualitas udara di tempat kita tinggal.' },
+    { e:'💡', n:'Relay & Lampu', d:'Saklar pintar yang menyalakan lampu hanya saat dibutuhkan.', ok:[11,13],
+      x:'Hemat listrik membuat sekolah lebih berkelanjutan (SDG 11), dan juga membantu iklim (SDG 13).' },
+    { e:'🌡️', n:'Sensor Suhu', d:'Mengukur panas dan dingin udara di sekolah dari waktu ke waktu.', ok:[13],
+      x:'Memahami perubahan suhu adalah langkah awal belajar tentang iklim (SDG 13).' },
+    { e:'🌧️', n:'Sensor Hujan', d:'Mendeteksi hujan dan seberapa deras hujan turun.', ok:[13,11],
+      x:'Data hujan membantu belajar cuaca dan peringatan dini (SDG 13), dan membantu warga bersiap (SDG 11).' },
+    { e:'🔆', n:'Sensor UV', d:'Mengukur sinar ultraviolet dari matahari.', ok:[13,11],
+      x:'Informasi UV melatih kesadaran cuaca (SDG 13) dan membantu warga bersiap beraktivitas (SDG 11).' },
+    { e:'🧭', n:'Sensor Tekanan Udara', d:'“Menimbang” udara di atas kepala kita.', ok:[13],
+      x:'Tekanan udara membantu memahami perubahan cuaca, topik utama SDG 13.' },
+    { e:'🌱', n:'Sensor Kelembaban Tanah', d:'Mengecek tanah masih basah atau sudah kering.', ok:[15],
+      x:'Merawat tanah dan tanaman selaras dengan SDG 15 (ekosistem daratan).' },
+    { e:'📱', n:'Dashboard Web', d:'Halaman tempat semua angka sensor tampil dan bisa dianalisis.', ok:[9,13],
+      x:'Dashboard adalah teknologi buatan sendiri (SDG 9), dan riwayat datanya membantu belajar tren iklim (SDG 13).' }
+  ];
+  var deck = [], qi = 0, score = 0, streak = 0, answered = false;
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+  $('sg-ans').innerHTML = [9, 11, 13, 15].map(function (n) {
+    return '<button type="button" class="sg-a" data-n="' + n + '" style="' + css(n) + '"><b>' + n + '</b>' + SDG[n].short + '</button>';
+  }).join('');
+
+  function startGame() {
+    deck = shuffle(QS.slice()); qi = 0; score = 0; streak = 0;
+    $('sg-gt').textContent = deck.length;
+    $('sg-again').hidden = true;
+    $('sg-ans').style.display = '';
+    $('sg-qe').style.display = '';
+    loadQ();
+  }
+  function loadQ() {
+    var q = deck[qi]; answered = false;
+    $('sg-gn').textContent = qi + 1; $('sg-gs').textContent = score; $('sg-gstreak').textContent = streak;
+    $('sg-gprog').style.width = (qi / deck.length * 100) + '%';
+    $('sg-qe').textContent = q.e; $('sg-qn').textContent = q.n; $('sg-qd').textContent = q.d;
+    $('sg-fb').textContent = 'Pilih salah satu tujuan di atas.';
+    $('sg-next').hidden = true;
+    Array.prototype.forEach.call($('sg-ans').children, function (b) { b.disabled = false; b.className = 'sg-a'; });
+  }
+  $('sg-ans').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.sg-a') : null;
+    if (!b || answered) return;
+    answered = true;
+    var n = Number(b.dataset.n), q = deck[qi], good = q.ok.indexOf(n) !== -1;
+    if (good) { score++; streak++; } else { streak = 0; }
+    $('sg-gs').textContent = score; $('sg-gstreak').textContent = streak;
+    Array.prototype.forEach.call($('sg-ans').children, function (x) {
+      var xn = Number(x.dataset.n); x.disabled = true;
+      if (q.ok.indexOf(xn) !== -1) x.classList.add('ok');
+      else if (x === b) x.classList.add('bad');
+      else x.classList.add('dim');
+    });
+    var main = q.ok[0], extra = q.ok.length > 1 ? ' (juga cocok: SDG ' + q.ok.slice(1).join(', SDG ') + ')' : '';
+    $('sg-fb').innerHTML = (good ? '<b>Benar! 🎉</b> ' : '<b>Belum tepat.</b> ') + 'Jawaban utama: <b>SDG ' + main + '</b>' + extra + '.<br>' + q.x;
+    $('sg-next').hidden = false;
+    $('sg-next').textContent = qi >= deck.length - 1 ? 'Lihat hasil ›' : 'Lanjut ›';
+  });
+  $('sg-next').addEventListener('click', function () {
+    if (qi >= deck.length - 1) { finishGame(); return; }
+    qi++; loadQ();
+  });
+  $('sg-again').addEventListener('click', startGame);
+  function finishGame() {
+    $('sg-gprog').style.width = '100%';
+    var pct = score / deck.length;
+    var msg = pct >= .9 ? 'Luar biasa! Kamu paham sekali kaitan sensor dengan SDGs. 🏆' : pct >= .6 ? 'Bagus! Sedikit lagi kamu jadi ahli SDGs. 🌟' : 'Tidak apa-apa, coba lagi dan baca kartu tujuan di atas dulu. 📚';
+    $('sg-qe').style.display = 'none'; $('sg-ans').style.display = 'none';
+    $('sg-qn').textContent = 'Skor akhir: ' + score + ' dari ' + deck.length;
+    $('sg-qd').textContent = msg;
+    $('sg-fb').textContent = '';
+    $('sg-next').hidden = true; $('sg-again').hidden = false;
+  }
+
+  /* =========================================================
+     AKSI HIJAU
+     ========================================================= */
+  var ACTS = [
+    { e:'💡', t:'Matikan lampu kalau tidak dipakai',   w:[11,13] },
+    { e:'🚰', t:'Siram tanaman dengan hemat air',      w:[15,11] },
+    { e:'🌳', t:'Tanam atau rawat pohon',              w:[15,13] },
+    { e:'🚲', t:'Jalan kaki atau bersepeda ke sekolah', w:[13,11] },
+    { e:'♻️', t:'Pilah sampah dengan benar',           w:[11,15] },
+    { e:'🔬', t:'Belajar membaca data AWS',            w:[9,13] },
+    { e:'📢', t:'Ajak teman membuka dashboard',        w:[13,9] },
+    { e:'🧪', t:'Buat proyek sains atau IoT',          w:[9,11] }
+  ];
+  var picked = {}, MAX = { 9:0, 11:0, 13:0, 15:0 };
+  ACTS.forEach(function (a) { a.w.forEach(function (n) { MAX[n]++; }); });
+
+  $('sg-acts').innerHTML = ACTS.map(function (a, i) {
+    return '<button type="button" class="sg-ac" data-i="' + i + '" aria-pressed="false"><span class="e">' + a.e + '</span><span>' + a.t +
+      '<small>membantu SDG ' + a.w.join(' & ') + '</small></span><span class="ck">✓</span></button>';
+  }).join('');
+  $('sg-meters').innerHTML = ORDER.map(function (n) {
+    return '<div class="sg-m" style="' + css(n) + '"><div class="t"><span>SDG ' + n + ' · ' + SDG[n].short + '</span><b id="sg-mv' + n + '">0%</b></div><div class="b"><i id="sg-mb' + n + '"></i></div></div>';
+  }).join('');
+  function renderAct() {
+    var val = { 9:0, 11:0, 13:0, 15:0 }, count = 0;
+    ACTS.forEach(function (a, i) { if (picked[i]) { count++; a.w.forEach(function (n) { val[n]++; }); } });
+    [9, 11, 13, 15].forEach(function (n) {
+      var p = Math.round(val[n] / MAX[n] * 100);
+      $('sg-mv' + n).textContent = p + '%'; $('sg-mb' + n).style.width = p + '%';
+    });
+    var w = $('sg-win'), all = count === ACTS.length;
+    if (all && w.hidden) { w.hidden = false; w.classList.remove('pop'); void w.offsetWidth; w.classList.add('pop'); }
+    if (!all) w.hidden = true;
+  }
+  $('sg-acts').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.sg-ac') : null;
+    if (!b) return;
+    var i = Number(b.dataset.i);
+    picked[i] = !picked[i];
+    b.classList.toggle('on', !!picked[i]); b.setAttribute('aria-pressed', picked[i] ? 'true' : 'false');
+    renderAct();
+  });
+
+  /* ---- mulai ---- */
+  showSdg(13);
+  startGame();
+  renderAct();
+})();
+</script>
+<!-- ========== SDGs 9 · 11 · 13 · 15 (SECTION BARU) — selesai ========== -->
+
 <!-- ========== GALERI ========== -->
 <section id="galeri" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
   <div class="judul-wrap">
@@ -1740,12 +2156,12 @@ html {
     </figure>
 
     <figure class="shrink-0 w-64 snap-start rounded-xl overflow-hidden border border-slate-700 bg-slate-800/50">
-      <img src="KUDU%20APIK/GAMBAR/FSI.png" alt="Foto FSI" class="w-full h-44 object-cover hover:scale-105 transition duration-300">
+      <img src="KUDU%20APIK/GAMBAR/FSI.png" alt="Tampilan Dashboard" class="w-full h-44 object-cover hover:scale-105 transition duration-300">
       <figcaption class="text-xs text-slate-400 p-2">FASILKOM UI</figcaption>
     </figure>
 
     <figure class="shrink-0 w-64 snap-start rounded-xl overflow-hidden border border-slate-700 bg-slate-800/50">
-      <img src="KUDU%20APIK/GAMBAR/OT.png" alt="Foto OT" class="w-full h-44 object-cover hover:scale-105 transition duration-300">
+      <img src="KUDU%20APIK/GAMBAR/OT.png" alt="Tampilan Intro" class="w-full h-44 object-cover hover:scale-105 transition duration-300">
       <figcaption class="text-xs text-slate-400 p-2">OUR TEAM</figcaption>
     </figure>
 
@@ -1796,6 +2212,7 @@ html {
         <li><a href="#info-sensor" class="text-slate-400 hover:text-cyan-300 transition">Info Sensor</a></li>
         <li><a href="#cara-kerja" class="text-slate-400 hover:text-cyan-300 transition">Cara Kerja</a></li>
         <li><a href="#manfaat-dampak" class="text-slate-400 hover:text-cyan-300 transition">Manfaat &amp; Dampak</a></li>
+        <li><a href="#sdgs" class="text-slate-400 hover:text-cyan-300 transition">SDGs</a></li>
         <li><a href="#galeri" class="text-slate-400 hover:text-cyan-300 transition">Galeri</a></li>
         <li>
           <span class="text-slate-200 font-bold uppercase tracking-wider">Pusat Kontrol</span>

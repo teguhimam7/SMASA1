@@ -427,6 +427,7 @@ html {
     <a href="#dashboard"       data-nav-item data-sec="dashboard"       class="nav-link"><span class="nav-ico">📊</span>Beranda</a>
     <a href="#Hasil-AWS"       data-nav-item data-sec="Hasil-AWS"       class="nav-link"><span class="nav-ico">🌦️</span>Data Cuaca</a>
     <a href="#info-sensor"     data-nav-item data-sec="info-sensor"     class="nav-link"><span class="nav-ico">⚡</span>Sensor</a>
+    <a href="#cara-kerja"      data-nav-item data-sec="cara-kerja"      class="nav-link"><span class="nav-ico">🛠️</span>Cara Kerja</a>
     <a href="#manfaat-dampak"  data-nav-item data-sec="manfaat-dampak"  class="nav-link"><span class="nav-ico">🌍</span>Manfaat</a>
     <a href="#galeri"          data-nav-item data-sec="galeri"          class="nav-link"><span class="nav-ico">📸</span>Dokumentasi</a>
 
@@ -476,6 +477,7 @@ html {
     <a href="#dashboard" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Dashboard</a>
     <a href="#Hasil-AWS" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Hasil AWS</a>
     <a href="#info-sensor" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Info Sensor</a>
+    <a href="#cara-kerja" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Cara Kerja</a>
     <a href="#manfaat-dampak" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Manfaat &amp; Dampak</a>
     <a href="#galeri" class="px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition">Galeri</a>
     <div class="px-4 pt-2 pb-1 text-xs uppercase tracking-wider text-slate-500">Pusat Kontrol</div>
@@ -926,6 +928,678 @@ html {
   </div>
 </section>
 
+<!-- ========== CARA KERJA MENARA (SECTION BARU) — mulai ========== -->
+<style>
+/* ===== CARA KERJA MENARA (semua class diawali ck- / fx- / jr- agar tidak bentrok) ===== */
+#cara-kerja { scroll-margin-top: 100px; }
+.ck-wrap { margin-top:2rem; background:rgba(15,23,42,.6); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border-radius:1rem; padding:1.5rem; border:1px solid #1e293b; color:#cbd5e1; position:relative; overflow:hidden; }
+.ck-sub { font-family:'Orbitron',sans-serif; font-size:.9rem; letter-spacing:.06em; color:#e0f2fe; margin:2.2rem 0 .9rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+.ck-sub small { font-family:'Plus Jakarta Sans',sans-serif; font-size:.68rem; color:#64748b; font-style:italic; letter-spacing:0; }
+.ck-btn { padding:.55rem 1.1rem; border-radius:9999px; font-size:.78rem; font-weight:700; color:#0f172a; background:linear-gradient(90deg,#22d3ee,#60a5fa); box-shadow:0 0 18px rgba(34,211,238,.35); transition:transform .2s, box-shadow .2s, opacity .2s; cursor:pointer; border:0; }
+.ck-btn:hover { transform:translateY(-2px); box-shadow:0 0 26px rgba(34,211,238,.6); }
+.ck-btn:active { transform:scale(.96); }
+.ck-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.ck-btn.ghost { color:#cbd5e1; background:rgba(30,41,59,.8); border:1px solid rgba(100,116,139,.45); box-shadow:none; }
+.ck-btn.ghost:hover { color:#fff; border-color:rgba(34,211,238,.6); }
+.ck-btn.on { color:#0f172a; background:linear-gradient(90deg,#fbbf24,#fb923c); }
+
+/* ---- 1. KENALAN ---- */
+.ck-tabs { display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1rem; }
+.ck-tab { flex:1 1 230px; text-align:left; padding:.8rem 1rem; border-radius:1rem; background:rgba(30,41,59,.7); border:1px solid rgba(100,116,139,.35); color:#94a3b8; transition:all .25s; cursor:pointer; }
+.ck-tab b { display:block; color:#e2e8f0; font-size:.9rem; }
+.ck-tab span { font-size:.72rem; }
+.ck-tab:hover { border-color:rgba(34,211,238,.6); transform:translateY(-2px); }
+.ck-tab.on { background:linear-gradient(135deg,rgba(8,47,73,.95),rgba(30,58,138,.55)); border-color:#22d3ee; box-shadow:0 0 22px rgba(34,211,238,.3); }
+.ck-tab.on b { color:#67e8f9; }
+.ck-meet { display:grid; grid-template-columns:1fr; gap:1rem; }
+@media (min-width:768px){ .ck-meet { grid-template-columns:300px 1fr; } }
+.ck-tower { border-radius:1rem; border:1px solid rgba(34,211,238,.25); padding:.6rem .6rem .8rem; background:radial-gradient(circle at 50% 0%,rgba(34,211,238,.16),transparent 60%),linear-gradient(#0b1528,#071022); }
+.ck-svg { width:100%; max-width:300px; margin:0 auto; display:block; overflow:visible; }
+.ck-node { cursor:pointer; outline:none; }
+.ck-nin { transform-box:fill-box; transform-origin:center; transition:transform .3s cubic-bezier(.3,1.6,.5,1); }
+.ck-node:hover .ck-nin, .ck-node:focus-visible .ck-nin, .ck-node.on .ck-nin { transform:scale(1.2); }
+.ck-node circle.bg { fill:#0f172a; stroke:#38bdf8; stroke-width:2; transition:fill .3s, stroke .3s; }
+.ck-node.on circle.bg { fill:#082f49; stroke:#fde047; }
+.ck-node circle.ring { fill:none; stroke:#fde047; stroke-width:2; opacity:0; }
+.ck-node.on circle.ring { animation:ckRing 1.6s ease-out infinite; }
+@keyframes ckRing { 0%{ r:22; opacity:.9; } 100%{ r:38; opacity:0; } }
+.ck-node text.em { font-size:21px; text-anchor:middle; dominant-baseline:central; }
+.ck-node text.lb { font-size:9.5px; text-anchor:middle; fill:#94a3b8; font-weight:700; }
+.ck-node.on text.lb { fill:#fde047; }
+.ck-wire { stroke:#334155; stroke-width:2; stroke-dasharray:4 4; animation:ckDash 1.2s linear infinite; }
+@keyframes ckDash { to { stroke-dashoffset:-16; } }
+.ck-wifi path { fill:none; stroke:#22d3ee; stroke-width:3; stroke-linecap:round; opacity:0; animation:ckWifi 2s ease-in-out infinite; }
+.ck-wifi path:nth-child(2){ animation-delay:.25s; } .ck-wifi path:nth-child(3){ animation-delay:.5s; }
+@keyframes ckWifi { 0%,100%{ opacity:.1; } 40%{ opacity:1; } }
+.ck-led { animation:ckBlink 1s steps(2,jump-none) infinite; }
+@keyframes ckBlink { 0%{ opacity:1; } 100%{ opacity:.15; } }
+
+.ck-chips { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.6rem; justify-content:center; }
+.ck-chip { padding:.25rem .55rem; border-radius:9999px; font-size:.68rem; font-weight:700; color:#94a3b8; background:rgba(30,41,59,.8); border:1px solid rgba(100,116,139,.35); cursor:pointer; transition:all .2s; }
+.ck-chip:hover { color:#fff; border-color:rgba(34,211,238,.6); }
+.ck-chip.on { color:#0f172a; background:linear-gradient(90deg,#fde047,#fbbf24); border-color:transparent; }
+
+.ck-info { border-radius:1rem; padding:1.1rem; background:rgba(30,41,59,.55); border:1px solid rgba(100,116,139,.3); display:flex; flex-direction:column; gap:.75rem; min-width:0; }
+.ck-info.pop > * { animation:ckPop .5s cubic-bezier(.2,.8,.2,1) both; }
+.ck-info.pop > *:nth-child(2){ animation-delay:.05s; } .ck-info.pop > *:nth-child(3){ animation-delay:.1s; } .ck-info.pop > *:nth-child(4){ animation-delay:.15s; }
+@keyframes ckPop { from{ opacity:0; transform:translateY(12px) scale(.98); } to{ opacity:1; transform:none; } }
+.ck-ihead { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
+.ck-iemoji { font-size:2.4rem; filter:drop-shadow(0 0 12px rgba(34,211,238,.5)); }
+.ck-iname { font-size:1.05rem; font-weight:800; color:#f1f5f9; line-height:1.2; }
+.ck-badge { font-size:.62rem; padding:.15rem .5rem; border-radius:9999px; background:rgba(34,211,238,.12); color:#67e8f9; border:1px solid rgba(34,211,238,.35); font-weight:700; letter-spacing:.04em; }
+.ck-qa { font-size:.82rem; line-height:1.65; color:#cbd5e1; }
+.ck-qa b { display:block; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:#22d3ee; margin-bottom:.15rem; }
+.ck-dash { font-size:.74rem; color:#fde68a; background:rgba(251,191,36,.08); border:1px dashed rgba(251,191,36,.4); border-radius:.7rem; padding:.45rem .7rem; }
+.ck-tour { display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; margin-top:.2rem; }
+.ck-tour small { font-size:.68rem; color:#64748b; font-style:italic; }
+
+/* ---- efek mini-animasi tiap sensor ---- */
+.fx { position:relative; height:130px; border-radius:1rem; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:.8rem; font-size:2.4rem; background:radial-gradient(circle at 50% 110%,rgba(34,211,238,.16),rgba(2,6,23,.65)); border:1px solid rgba(100,116,139,.25); }
+.fx-drop { position:absolute; top:-24px; font-size:1.15rem; animation:fxFall 1.3s linear infinite; }
+@keyframes fxFall { 0%{ opacity:0; } 15%{ opacity:1; } 100%{ transform:translateY(170px); opacity:.2; } }
+.fx-float { position:absolute; bottom:-24px; font-size:1.2rem; animation:fxFloat 3s ease-in infinite; }
+@keyframes fxFloat { 0%{ transform:translateY(0) scale(.6); opacity:0; } 20%{ opacity:1; } 100%{ transform:translateY(-150px) scale(1.2); opacity:0; } }
+.fx-sun { font-size:3.2rem; animation:fxSpin 9s linear infinite; filter:drop-shadow(0 0 18px #fbbf24); }
+.fx-sun.uv { filter:drop-shadow(0 0 18px #c084fc) hue-rotate(250deg); }
+@keyframes fxSpin { to{ transform:rotate(360deg); } }
+.fx-fire { font-size:3.3rem; transform-origin:50% 90%; animation:fxFlick .45s ease-in-out infinite alternate; filter:drop-shadow(0 0 16px #fb923c); }
+@keyframes fxFlick { from{ transform:scale(.9,1) rotate(-4deg); } to{ transform:scale(1.12,1.22) rotate(4deg); } }
+.fx-th { width:26px; height:92px; border:3px solid #94a3b8; border-radius:14px; position:relative; overflow:hidden; background:#0f172a; }
+.fx-th i { position:absolute; left:0; right:0; bottom:0; background:linear-gradient(#fb923c,#ef4444); animation:fxMerc 3.5s ease-in-out infinite alternate; }
+@keyframes fxMerc { from{ height:18%; } to{ height:92%; } }
+.fx-lbl { font-size:1rem; font-weight:800; color:#fdba74; }
+.fx-sonar s { position:absolute; left:20%; top:50%; width:12px; height:12px; margin:-6px; border:2px solid #22d3ee; border-radius:50%; animation:fxPing 2.1s ease-out infinite; }
+.fx-sonar s:nth-of-type(2){ animation-delay:.7s; } .fx-sonar s:nth-of-type(3){ animation-delay:1.4s; }
+@keyframes fxPing { 0%{ transform:scale(1); opacity:1; } 100%{ transform:scale(11); opacity:0; } }
+.fx-sonar .bat { position:absolute; left:14%; top:50%; transform:translateY(-50%); z-index:2; }
+.fx-sonar .wall { position:absolute; right:12%; top:50%; transform:translateY(-50%); }
+.fx-needle { transform-origin:60px 65px; animation:fxSwing 4s ease-in-out infinite alternate; }
+@keyframes fxSwing { from{ transform:rotate(-58deg); } to{ transform:rotate(58deg); } }
+.fx-grow { transform-origin:50% 100%; animation:fxGrow 3s ease-in-out infinite alternate; font-size:3rem; }
+@keyframes fxGrow { from{ transform:scale(.6); } to{ transform:scale(1.35); } }
+.fx-cloud { position:absolute; font-size:2.6rem; filter:grayscale(1) brightness(.7); animation:fxDrift 6s ease-in-out infinite alternate; }
+@keyframes fxDrift { from{ transform:translateX(-30px); } to{ transform:translateX(30px); } }
+.fx-dn { position:absolute; font-size:3rem; animation:fxDay 6s ease-in-out infinite; }
+.fx-dn.n { animation-delay:-3s; }
+@keyframes fxDay { 0%,100%{ opacity:0; transform:scale(.5) rotate(-40deg); } 25%,75%{ opacity:1; transform:none; } }
+.fx-lamp { font-size:3.3rem; animation:fxLamp 3.2s ease-in-out infinite; }
+@keyframes fxLamp { 0%,45%{ filter:grayscale(1) brightness(.5); } 50%,95%{ filter:drop-shadow(0 0 22px #fde047) brightness(1.15); } 100%{ filter:grayscale(1) brightness(.5); } }
+
+/* ---- 2. PERJALANAN DATA ---- */
+.jr-track { display:flex; flex-direction:column; align-items:stretch; gap:.35rem; }
+@media (min-width:768px){ .jr-track { flex-direction:row; align-items:center; } }
+.jr-node { flex:1 1 0; min-width:0; text-align:center; padding:.8rem .5rem; border-radius:1rem; background:rgba(30,41,59,.65); border:1px solid rgba(100,116,139,.35); color:#94a3b8; font-size:.72rem; font-weight:700; cursor:pointer; transition:all .35s; position:relative; }
+.jr-node .ic { display:block; font-size:1.9rem; transition:transform .35s cubic-bezier(.3,1.6,.5,1); }
+.jr-node:hover { border-color:rgba(34,211,238,.6); }
+.jr-node.done { color:#67e8f9; border-color:rgba(34,211,238,.45); }
+.jr-node.on { color:#fff; border-color:#22d3ee; background:linear-gradient(145deg,rgba(8,47,73,.95),rgba(30,58,138,.5)); box-shadow:0 0 26px rgba(34,211,238,.5); transform:translateY(-4px); }
+.jr-node.on .ic { transform:scale(1.3); }
+.jr-pk { display:block; min-height:1.3rem; margin-top:.3rem; font-size:.66rem; color:#fde047; opacity:0; transform:translateY(6px); transition:all .35s; }
+.jr-node.on .jr-pk { opacity:1; transform:none; }
+.jr-arrow { position:relative; flex:0 0 auto; background:rgba(34,211,238,.18); border-radius:2px; overflow:hidden; width:2px; height:26px; align-self:center; }
+@media (min-width:768px){ .jr-arrow { width:34px; height:2px; } }
+.jr-arrow::after { content:''; position:absolute; background:#22d3ee; box-shadow:0 0 8px #22d3ee; opacity:0; left:0; top:-40%; width:100%; height:40%; }
+.jr-arrow.on::after { opacity:1; animation:jrRunY 1s linear infinite; }
+@media (min-width:768px){ .jr-arrow::after { top:0; left:-40%; width:40%; height:100%; } .jr-arrow.on::after { animation-name:jrRunX; } }
+@keyframes jrRunY { to{ top:100%; } } @keyframes jrRunX { to{ left:100%; } }
+.jr-say { margin-top:1rem; display:flex; gap:.8rem; align-items:flex-start; padding:1rem; border-radius:1rem; background:rgba(8,47,73,.45); border:1px solid rgba(34,211,238,.35); min-height:92px; }
+.jr-av { font-size:2rem; animation:fxBob 2.4s ease-in-out infinite; }
+@keyframes fxBob { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+.jr-say b { color:#67e8f9; font-size:.8rem; display:block; margin-bottom:.2rem; }
+.jr-say p { font-size:.84rem; line-height:1.65; color:#e2e8f0; margin:0; }
+.jr-say.pop .jr-txt { animation:ckPop .45s ease both; }
+.jr-ctrl { margin-top:.8rem; display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+.jr-bar { flex:1 1 120px; height:6px; border-radius:9999px; background:rgba(51,65,85,.7); overflow:hidden; }
+.jr-bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,#22d3ee,#60a5fa,#a78bfa); transition:width .5s ease; }
+
+/* ---- 3. DETEKTIF LIVE / OFFLINE ---- */
+.dt-card { border-radius:1rem; padding:1rem; background:rgba(30,41,59,.55); border:1px solid rgba(100,116,139,.3); }
+.dt-top { display:flex; flex-wrap:wrap; gap:.7rem; align-items:center; justify-content:space-between; margin-bottom:.8rem; }
+.dt-pill { padding:.3rem .8rem; border-radius:9999px; font-size:.74rem; font-weight:700; border:1px solid; transition:all .4s; display:inline-flex; align-items:center; gap:.45rem; }
+.dt-pill i { width:8px; height:8px; border-radius:50%; background:currentColor; display:inline-block; }
+.dt-pill.live { color:#34d399; background:rgba(16,185,129,.1); border-color:rgba(16,185,129,.35); }
+.dt-pill.live i { animation:ckBlink .9s ease-in-out infinite alternate; }
+.dt-pill.off { color:#f87171; background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.35); }
+.dt-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:.6rem; transition:opacity .6s; }
+.dt-mini { padding:.7rem; border-radius:.9rem; background:rgba(15,23,42,.7); border:1px solid rgba(100,116,139,.3); text-align:center; }
+.dt-mini small { display:block; font-size:.66rem; color:#94a3b8; }
+.dt-mini strong { font-size:1.35rem; color:#fff; font-family:'Orbitron',sans-serif; }
+.dt-mini span { font-size:.7rem; color:#94a3b8; margin-left:2px; }
+.dt-wait { margin-top:.8rem; font-size:.78rem; color:#cbd5e1; min-height:1.2rem; }
+.dt-bar { height:8px; border-radius:9999px; background:rgba(51,65,85,.7); overflow:hidden; margin-top:.4rem; }
+.dt-bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,#34d399,#fbbf24,#ef4444); }
+
+/* ---- 4. COBA SENDIRI ---- */
+.sm-grid { display:grid; grid-template-columns:1fr; gap:.9rem; }
+@media (min-width:768px){ .sm-grid { grid-template-columns:repeat(2,1fr); } }
+.sm-card { border-radius:1rem; padding:1rem; background:rgba(30,41,59,.55); border:1px solid rgba(100,116,139,.3); }
+.sm-card h5 { font-size:.9rem; font-weight:800; color:#f1f5f9; margin:0 0 .15rem; }
+.sm-card .tag { font-size:.62rem; color:#67e8f9; letter-spacing:.08em; text-transform:uppercase; font-weight:700; }
+.sm-stage { position:relative; height:96px; margin:.7rem 0; border-radius:.8rem; overflow:hidden; background:linear-gradient(#0b1528,#0f1f3a); border:1px solid rgba(100,116,139,.25); display:flex; align-items:center; justify-content:center; }
+.sm-out { font-size:.78rem; line-height:1.6; color:#e2e8f0; min-height:3.2em; }
+.sm-out b { color:#fde047; }
+.sm-note { font-size:.68rem; color:#64748b; font-style:italic; margin-top:.3rem; }
+.sm-card input[type=range] { width:100%; accent-color:#22d3ee; cursor:pointer; margin-top:.2rem; }
+.sm-rl { display:flex; justify-content:space-between; font-size:.66rem; color:#94a3b8; }
+#sm-rain-st .d { position:absolute; top:-14px; font-size:.9rem; animation:fxFall 1s linear infinite; }
+#sm-dist-st .b { position:absolute; left:8%; top:50%; transform:translateY(-50%); font-size:1.8rem; z-index:2; }
+#sm-dist-st .w { position:absolute; top:50%; transform:translateY(-50%); font-size:2rem; transition:left .25s; }
+#sm-dist-st s { position:absolute; left:14%; top:50%; width:10px; height:10px; margin:-5px; border:2px solid #22d3ee; border-radius:50%; animation:smPing 1.8s ease-out infinite; }
+#sm-dist-st s:nth-of-type(2){ animation-delay:.9s; }
+@keyframes smPing { 0%{ transform:scale(1); opacity:1; } 100%{ transform:scale(9); opacity:0; } }
+#sm-lamp-st { transition:background .5s; }
+#sm-lamp-st .bulb { font-size:2.6rem; transition:filter .4s; }
+#sm-lamp-st .sky { position:absolute; top:6px; right:12px; font-size:1.6rem; transition:all .4s; }
+#sm-soil-st .pl { font-size:2.8rem; transition:transform .4s cubic-bezier(.3,1.6,.5,1); transform-origin:50% 100%; }
+
+@media (prefers-reduced-motion:reduce){
+  .ck-wire,.ck-wifi path,.ck-led,.ck-node.on circle.ring,.fx *,.fx,.jr-av,.jr-arrow.on::after,.dt-pill i,#sm-rain-st .d,#sm-dist-st s { animation:none !important; }
+}
+</style>
+
+<section id="cara-kerja" class="ck-wrap mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300">
+
+  <div class="judul-wrap">
+    <div class="judul-ikon">🛠️</div>
+    <h3 class="judul-estetik">Cara Kerja Menara AWS</h3>
+    <div class="judul-hias"><span></span></div>
+    <p class="subjudul-estetik">Ikuti perjalanan data dari menara sampai ke layarmu. Klik, geser, dan coba sendiri!</p>
+  </div>
+
+  <!-- ===== 1. KENALAN DENGAN MENARA ===== -->
+  <h4 class="ck-sub" style="margin-top:0">🗼 1 · Kenalan dengan Menara <small>klik bulatan sensor di menara</small></h4>
+
+  <div class="ck-tabs" role="tablist">
+    <button type="button" class="ck-tab on" data-t="1" role="tab" aria-selected="true">
+      <b>🗼 Menara 1 (ESP 1)</b><span>Si Penjaga Cuaca · 8 sensor</span>
+    </button>
+    <button type="button" class="ck-tab" data-t="2" role="tab" aria-selected="false">
+      <b>🗼 Menara 2 (ESP 2)</b><span>Si Perawat Taman &amp; Udara · 3 sensor + lampu</span>
+    </button>
+  </div>
+
+  <div class="ck-meet">
+    <div class="ck-tower">
+      <div id="ck-svgbox"></div>
+      <div id="ck-chips" class="ck-chips"></div>
+    </div>
+
+    <div id="ck-info" class="ck-info">
+      <div class="ck-ihead">
+        <div id="ck-iemoji" class="ck-iemoji">🌡️</div>
+        <div>
+          <div id="ck-iname" class="ck-iname">Sensor</div>
+          <span id="ck-ibadge" class="ck-badge">Menara 1</span>
+        </div>
+      </div>
+      <div class="ck-qa"><b>🎯 Apa tugasnya?</b><span id="ck-itask"></span></div>
+      <div class="ck-qa"><b>⚙️ Cara kerjanya</b><span id="ck-ihow"></span></div>
+      <div id="ck-ifx" class="fx"></div>
+      <div id="ck-idash" class="ck-dash"></div>
+      <div class="ck-tour">
+        <button type="button" id="ck-tour-btn" class="ck-btn ghost">▶ Tur otomatis</button>
+        <small id="ck-tower-desc"></small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 2. PERJALANAN DATA ===== -->
+  <h4 class="ck-sub">📦 2 · Perjalanan Sebuah Data <small>tekan tombol, lalu lihat paketnya berjalan</small></h4>
+
+  <div class="jr-track" id="jr-track">
+    <button type="button" class="jr-node" data-s="0"><span class="ic">📡</span>Sensor<span class="jr-pk"></span></button>
+    <div class="jr-arrow"></div>
+    <button type="button" class="jr-node" data-s="1"><span class="ic">🧠</span>ESP32<span class="jr-pk"></span></button>
+    <div class="jr-arrow"></div>
+    <button type="button" class="jr-node" data-s="2"><span class="ic">📶</span>Wi-Fi<span class="jr-pk"></span></button>
+    <div class="jr-arrow"></div>
+    <button type="button" class="jr-node" data-s="3"><span class="ic">☁️</span>Database Cloud<span class="jr-pk"></span></button>
+    <div class="jr-arrow"></div>
+    <button type="button" class="jr-node" data-s="4"><span class="ic">📱</span>Dashboard<span class="jr-pk"></span></button>
+  </div>
+
+  <div id="jr-say" class="jr-say">
+    <div class="jr-av">🤖</div>
+    <div class="jr-txt"><b id="jr-title">Kak ESP bilang:</b><p id="jr-text">Halo! Aku akan mengantar datamu keliling. Tekan tombol “Kirim Data!” untuk mulai.</p></div>
+  </div>
+  <div class="jr-ctrl">
+    <button type="button" id="jr-play" class="ck-btn">▶ Kirim Data!</button>
+    <button type="button" id="jr-next" class="ck-btn ghost">Langkah ›</button>
+    <div class="jr-bar"><i id="jr-prog"></i></div>
+  </div>
+
+  <!-- ===== 3. DETEKTIF LIVE / OFFLINE ===== -->
+  <h4 class="ck-sub">🕵️ 3 · Detektif LIVE &amp; OFFLINE <small>apa yang terjadi kalau Wi-Fi putus?</small></h4>
+  <div class="dt-card">
+    <div class="dt-top">
+      <span id="dt-pill" class="dt-pill live"><i></i><span id="dt-pilltxt">AWS 1 LIVE</span></span>
+      <button type="button" id="dt-btn" class="ck-btn ghost">✂️ Putuskan Wi-Fi</button>
+    </div>
+    <div id="dt-cards" class="dt-cards">
+      <div class="dt-mini"><small>🌡️ Suhu Udara</small><strong id="dt-t">31.2</strong><span>°C</span></div>
+      <div class="dt-mini"><small>💧 Kelembapan</small><strong id="dt-h">62</strong><span>%</span></div>
+      <div class="dt-mini"><small>🔆 UV Index</small><strong id="dt-u">6.4</strong><span>idx</span></div>
+    </div>
+    <div class="dt-wait" id="dt-wait">Menara mengirim data terus-menerus, jadi angkanya hidup dan bergerak.</div>
+    <div class="dt-bar"><i id="dt-prog"></i></div>
+    <div class="sm-note">Di web ini, kalau lebih dari 45 detik tidak ada data baru, status berubah jadi OFFLINE dan kartu menjadi redup. Di sini waktunya dipercepat 10×.</div>
+  </div>
+
+  <!-- ===== 4. COBA SENDIRI ===== -->
+  <h4 class="ck-sub">🎮 4 · Coba Sendiri! <small>geser slider dan lihat apa yang terjadi</small></h4>
+  <div class="sm-grid">
+
+    <div class="sm-card">
+      <span class="tag">Menara 1 · Sensor Hujan</span>
+      <h5>🌧️ Seberapa deras hujannya?</h5>
+      <div class="sm-stage" id="sm-rain-st"></div>
+      <input type="range" id="sm-rain" min="0" max="4095" step="5" value="4095" aria-label="Angka sensor hujan">
+      <div class="sm-rl"><span>0 (basah kuyup)</span><span>4095 (kering)</span></div>
+      <div class="sm-out" id="sm-rain-out"></div>
+    </div>
+
+    <div class="sm-card">
+      <span class="tag">Menara 1 · Sensor Jarak</span>
+      <h5>📏 Berapa jauh temboknya?</h5>
+      <div class="sm-stage" id="sm-dist-st"><span class="b">🦇</span><s></s><s></s><span class="w" id="sm-wall">🧱</span></div>
+      <input type="range" id="sm-dist" min="5" max="200" step="1" value="100" aria-label="Jarak benda dalam sentimeter">
+      <div class="sm-rl"><span>5 cm</span><span>200 cm</span></div>
+      <div class="sm-out" id="sm-dist-out"></div>
+    </div>
+
+    <div class="sm-card">
+      <span class="tag">Menara 2 · Sensor Cahaya + Relay</span>
+      <h5>💡 Lampu otomatis</h5>
+      <div class="sm-stage" id="sm-lamp-st"><span class="sky" id="sm-sky">☀️</span><span class="bulb" id="sm-bulb">💡</span></div>
+      <input type="range" id="sm-light" min="0" max="100" step="1" value="80" aria-label="Kecerahan sekitar">
+      <div class="sm-rl"><span>gelap</span><span>terang</span></div>
+      <div class="sm-out" id="sm-lamp-out"></div>
+      <div class="sm-note">Contoh aturan: relay menyalakan lampu kalau kecerahan di bawah 30%. Batas gelap yang sebenarnya diatur di program ESP32.</div>
+    </div>
+
+    <div class="sm-card">
+      <span class="tag">Menara 2 · Sensor Tanah</span>
+      <h5>🌱 Tanamannya haus atau kenyang?</h5>
+      <div class="sm-stage" id="sm-soil-st"><span class="pl" id="sm-plant">🌱</span></div>
+      <input type="range" id="sm-soil" min="0" max="100" step="1" value="55" aria-label="Kelembaban tanah">
+      <div class="sm-rl"><span>kering</span><span>basah</span></div>
+      <div class="sm-out" id="sm-soil-out"></div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var root = $('cara-kerja');
+  if (!root) return;
+
+  /* =========================================================
+     DATA SENSOR (bahasa anak 12 tahun)
+     ========================================================= */
+  var SENS = {
+    temp:  { e:'🌡️', n:'Sensor Suhu (DHT22)', s:'Suhu', tw:1,
+      task:'Mengukur seberapa panas atau dingin udara di sekolah.',
+      how:'Di dalam sensor ada bagian mungil yang sifat listriknya berubah kalau suhu naik atau turun. ESP32 membaca perubahan itu lalu menghitungnya jadi derajat Celsius. Mirip termometer, tapi bisa “ngobrol” dengan komputer!',
+      dash:'Muncul di kartu “Suhu Udara” dengan satuan °C.', fx:'thermo' },
+    hum:   { e:'💧', n:'Sensor Kelembapan (DHT22)', s:'Lembap', tw:1,
+      task:'Mengukur seberapa “basah” udara. Udara lembap berarti banyak uap air, makanya jemuran jadi lama kering.',
+      how:'Sensor punya lapisan khusus yang menyerap uap air dari udara. Makin banyak uap air, makin berubah sifat listriknya. ESP32 menerjemahkannya jadi persen (%).',
+      dash:'Muncul di kartu “Kelembapan” dengan satuan %.', fx:'hum' },
+    light: { e:'☀️', n:'Sensor Cahaya (LDR)', s:'Cahaya', tw:1,
+      task:'Jadi “mata” menara untuk tahu hari sedang terang atau gelap.',
+      how:'LDR adalah komponen yang sifat listriknya berubah mengikuti cahaya. ESP32 mengukurnya jadi angka antara 0 sampai 4095 (namanya ADC). Angkanya berubah-ubah sesuai terang gelapnya hari.',
+      dash:'Muncul di kartu “Intensitas LDR” dengan satuan ADC.', fx:'sun' },
+    fire:  { e:'🔥', n:'Sensor Api', s:'Api', tw:1,
+      task:'Jadi penjaga yang mencari api. Kalau ada api, menara bisa tahu lebih cepat.',
+      how:'Nyala api memancarkan cahaya inframerah yang tidak terlihat mata kita, tetapi sensor ini bisa “melihatnya”. Kalau ada api, angka yang dibaca ESP32 ikut berubah.',
+      dash:'Muncul di kartu “Sensor Api” dengan satuan ADC.', fx:'fire' },
+    dist:  { e:'📏', n:'Sensor Jarak Ultrasonik', s:'Jarak', tw:1,
+      task:'Mengukur jarak ke benda di depannya, seperti kelelawar yang tahu letak tembok dalam gelap.',
+      how:'Sensor “berteriak” dengan suara yang terlalu tinggi untuk telinga kita, lalu menunggu gemanya kembali. Makin lama gema kembali, makin jauh bendanya. Coba sendiri di bagian “Coba Sendiri”!',
+      dash:'Muncul di kartu “Jarak Ultrasonik” dengan satuan cm.', fx:'sonar' },
+    rain:  { e:'🌧️', n:'Sensor Hujan', s:'Hujan', tw:1,
+      task:'Merasakan apakah ada tetesan air jatuh di papan sensor, dan seberapa banyak.',
+      how:'Papan sensor punya jalur logam. Saat basah, air menyambung jalurnya sehingga listrik lebih mudah lewat. Di program kita, makin basah angka ADC makin kecil, lalu diubah jadi persen hujan: makin basah, persennya makin besar.',
+      dash:'Muncul di kartu “Intensitas Hujan” dengan satuan %.', fx:'rain' },
+    uv:    { e:'🔆', n:'Sensor Sinar UV', s:'UV', tw:1,
+      task:'Mengukur “sinar tak terlihat” dari matahari yang bisa membuat kulit terbakar.',
+      how:'Sensor peka terhadap sinar ultraviolet dan mengubahnya jadi tegangan listrik kecil. Makin kuat sinar UV, makin besar angka UV Index yang tampil.',
+      dash:'Muncul di kartu “UV Index”.', fx:'uv' },
+    pres:  { e:'🧭', n:'Sensor Tekanan Udara (BMP280)', s:'Tekanan', tw:1,
+      task:'“Menimbang” berat udara di atas kepala kita.',
+      how:'Udara ternyata punya berat! Sensor merasakan seberapa kuat udara menekan, satuannya hPa. Kalau tekanan turun, cuaca biasanya mau berubah, misalnya jadi mendung.',
+      dash:'Muncul di kartu “Tekanan Udara” dengan satuan hPa.', fx:'gauge' },
+    ldr2:  { e:'☀️', n:'Sensor Cahaya (LDR) Menara 2', s:'Cahaya', tw:2,
+      task:'Memberi tahu menara 2 apakah area taman sedang terang atau gelap.',
+      how:'Sama seperti LDR di menara 1: sifat listriknya berubah mengikuti cahaya, lalu ESP32 mengubahnya jadi angka 0 sampai 4095 (ADC).',
+      dash:'Muncul di kartu “Intensitas LDR” (AWS 2) dengan satuan ADC.', fx:'daynight' },
+    air:   { e:'🌫️', n:'Sensor Kualitas Udara (MQ-135)', s:'Udara', tw:2,
+      task:'Jadi “hidung” menara yang mengendus udara kotor, misalnya asap atau gas.',
+      how:'Sensor dipanaskan sedikit. Saat ada gas pencemar, sifat listrik permukaannya berubah, sehingga angka yang dibaca ESP32 biasanya jadi lebih besar. Hasilnya perkiraan, bukan alat laboratorium.',
+      dash:'Muncul di kartu “Kualitas Udara” dengan satuan ADC.', fx:'air' },
+    soil:  { e:'🌱', n:'Sensor Kelembaban Tanah', s:'Tanah', tw:2,
+      task:'Mengecek apakah tanah masih basah atau sudah haus.',
+      how:'Bagian logam sensor ditancapkan ke tanah. Tanah basah lebih mudah dialiri listrik, tanah kering lebih sulit. ESP32 menerjemahkannya jadi persen kelembaban.',
+      dash:'Muncul di kartu “Kelembaban Tanah” dengan satuan %.', fx:'soil' },
+    relay: { e:'💡', n:'Relay & Lampu', s:'Lampu', tw:2,
+      task:'Jadi “saklar pintar” yang bisa menyalakan dan mematikan lampu.',
+      how:'Relay seperti jari kecil yang menekan saklar listrik. ESP32 hanya bilang “nyala!” atau “mati!”, lalu relay menurut. Status ON/OFF-nya ikut dikirim ke dashboard.',
+      dash:'Muncul di kartu “Lampu (Relay)” dengan status ON atau OFF.', fx:'lamp' }
+  };
+
+  var TOWERS = {
+    1: { name:'Menara 1', table:'sensor_data',   val:'31.2 °C', what:'suhu udara',
+         desc:'Menara 1 mengirim 8 jenis data cuaca.',
+         ys:[80,142,204,266], keys:['uv','light','rain','fire','temp','hum','pres','dist'] },
+    2: { name:'Menara 2', table:'sensor_data_2', val:'64 %',    what:'kelembaban tanah',
+         desc:'Menara 2 mengirim data taman dan udara, plus status lampu.',
+         ys:[120,200],   keys:['ldr2','air','soil','relay'] }
+  };
+
+  /* =========================================================
+     EFEK MINI-ANIMASI
+     ========================================================= */
+  function drops(n, emo) {
+    var h = '';
+    for (var i = 0; i < n; i++) h += '<span class="fx-drop" style="left:' + (8 + i * (84 / n)) + '%;animation-delay:' + (i * 0.17).toFixed(2) + 's">' + emo + '</span>';
+    return h;
+  }
+  function floats(n, emo) {
+    var h = '';
+    for (var i = 0; i < n; i++) h += '<span class="fx-float" style="left:' + (10 + i * (80 / n)) + '%;animation-delay:' + (i * 0.45).toFixed(2) + 's">' + emo + '</span>';
+    return h;
+  }
+  var FX = {
+    thermo:  function () { return '<div class="fx-th"><i></i></div><div class="fx-lbl">°C</div>'; },
+    hum:     function () { return floats(6, '💧') + '<span style="font-size:2.6rem">💨</span>'; },
+    sun:     function () { return '<span class="fx-sun">☀️</span>'; },
+    uv:      function () { return '<span class="fx-sun uv">🔆</span>'; },
+    fire:    function () { return '<span class="fx-fire">🔥</span>'; },
+    sonar:   function () { return '<div class="fx-sonar" style="position:absolute;inset:0"><span class="bat" style="font-size:2rem">🦇</span><s></s><s></s><s></s><span class="wall" style="font-size:2.4rem">🧱</span></div>'; },
+    rain:    function () { return '<span style="position:absolute;top:4px;font-size:2.2rem">☁️</span>' + drops(8, '💧'); },
+    gauge:   function () { return '<svg viewBox="0 0 120 75" width="190"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/></linearGradient></defs><path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="#1e293b" stroke-width="11" stroke-linecap="round"/><path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="url(#gg)" stroke-width="7" stroke-linecap="round"/><g class="fx-needle"><line x1="60" y1="65" x2="60" y2="24" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g><circle cx="60" cy="65" r="6" fill="#fff"/><text x="60" y="73" text-anchor="middle" font-size="7" fill="#94a3b8">hPa</text></svg>'; },
+    daynight:function () { return '<span class="fx-dn">🌞</span><span class="fx-dn n">🌙</span>'; },
+    air:     function () { return '<span class="fx-cloud" style="left:18%;top:16px">☁️</span><span class="fx-cloud" style="left:44%;top:46px;animation-delay:-2s">☁️</span><span class="fx-cloud" style="left:64%;top:10px;animation-delay:-4s">☁️</span><span style="font-size:1.4rem;position:absolute;bottom:8px">😷</span>'; },
+    soil:    function () { return '<span class="fx-grow">🌱</span>' + drops(4, '💧'); },
+    lamp:    function () { return '<span class="fx-lamp">💡</span>'; }
+  };
+
+  /* =========================================================
+     1. KENALAN: menara + panel info
+     ========================================================= */
+  var cur = 1, curKey = null, tourTimer = null;
+
+  function towerSVG(t) {
+    var T = TOWERS[t], g = '';
+    var top = 40, bot = 312;
+    function hw(y) { return 12 + (y - top) / (bot - top) * 20; }
+    T.keys.forEach(function (k, i) {
+      var row = Math.floor(i / 2), left = (i % 2 === 0);
+      var y = T.ys[row], x = left ? 46 : 214;
+      var edge = left ? 130 - hw(y) : 130 + hw(y);
+      g += '<line class="ck-wire" x1="' + edge + '" y1="' + y + '" x2="' + (left ? x + 22 : x - 22) + '" y2="' + y + '"/>' +
+        '<g class="ck-node" data-k="' + k + '" tabindex="0" role="button" aria-label="' + SENS[k].n + '" transform="translate(' + x + ',' + y + ')">' +
+          '<circle class="ring" r="22"/>' +
+          '<g class="ck-nin"><circle class="bg" r="22"/><text class="em">' + SENS[k].e + '</text></g>' +
+          '<text class="lb" y="36">' + SENS[k].s + '</text>' +
+        '</g>';
+    });
+    var braces = '';
+    for (var y = 70; y < bot - 10; y += 40) {
+      braces += '<line x1="' + (130 - hw(y)) + '" y1="' + y + '" x2="' + (130 + hw(y + 40)) + '" y2="' + (y + 40) + '" stroke="#475569" stroke-width="1.5"/>' +
+                '<line x1="' + (130 + hw(y)) + '" y1="' + y + '" x2="' + (130 - hw(y + 40)) + '" y2="' + (y + 40) + '" stroke="#475569" stroke-width="1.5"/>';
+    }
+    return '<svg class="ck-svg" viewBox="0 0 260 392" role="group" aria-label="Gambar ' + T.name + '">' +
+      '<defs><linearGradient id="mast" x1="0" x2="1"><stop offset="0" stop-color="#1e293b"/><stop offset=".5" stop-color="#475569"/><stop offset="1" stop-color="#1e293b"/></linearGradient></defs>' +
+      '<g class="ck-wifi" transform="translate(130,28)"><path d="M-22 -2 A26 26 0 0 1 22 -2"/><path d="M-14 6 A16 16 0 0 1 14 6"/><path d="M-6 13 A7 7 0 0 1 6 13"/></g>' +
+      '<polygon points="' + (130 - hw(top)) + ',' + top + ' ' + (130 + hw(top)) + ',' + top + ' ' + (130 + hw(bot)) + ',' + bot + ' ' + (130 - hw(bot)) + ',' + bot + '" fill="url(#mast)" opacity=".55" stroke="#64748b" stroke-width="1.5"/>' +
+      braces + g +
+      '<rect x="78" y="312" width="104" height="52" rx="10" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>' +
+      '<text x="130" y="338" text-anchor="middle" font-size="15" font-weight="800" fill="#67e8f9">ESP32</text>' +
+      '<text x="130" y="354" text-anchor="middle" font-size="8.5" fill="#94a3b8">otak menara</text>' +
+      '<circle class="ck-led" cx="94" cy="324" r="3.5" fill="#34d399"/>' +
+      '<line x1="40" y1="372" x2="220" y2="372" stroke="#334155" stroke-width="3" stroke-linecap="round"/>' +
+      '</svg>';
+  }
+
+  function renderTower(t) {
+    cur = t;
+    var T = TOWERS[t];
+    $('ck-svgbox').innerHTML = towerSVG(t);
+    $('ck-chips').innerHTML = T.keys.map(function (k) {
+      return '<button type="button" class="ck-chip" data-k="' + k + '">' + SENS[k].e + ' ' + SENS[k].s + '</button>';
+    }).join('');
+    $('ck-tower-desc').textContent = T.desc;
+    document.querySelectorAll('.ck-tab').forEach(function (b) {
+      var on = Number(b.dataset.t) === t;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    select(T.keys[0], true);
+    updateJourneyTexts();
+  }
+
+  function select(k, silent) {
+    var S = SENS[k]; if (!S) return;
+    curKey = k;
+    document.querySelectorAll('.ck-node').forEach(function (n) { n.classList.toggle('on', n.dataset.k === k); });
+    document.querySelectorAll('.ck-chip').forEach(function (n) { n.classList.toggle('on', n.dataset.k === k); });
+    $('ck-iemoji').textContent = S.e;
+    $('ck-iname').textContent = S.n;
+    $('ck-ibadge').textContent = TOWERS[S.tw].name + ' · ESP ' + S.tw;
+    $('ck-itask').textContent = S.task;
+    $('ck-ihow').textContent = S.how;
+    $('ck-idash').textContent = '📺 ' + S.dash;
+    $('ck-ifx').innerHTML = FX[S.fx]();
+    var box = $('ck-info');
+    box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
+  }
+
+  $('ck-svgbox').addEventListener('click', function (e) {
+    var n = e.target.closest ? e.target.closest('.ck-node') : null;
+    if (n) { stopTour(); select(n.dataset.k); }
+  });
+  $('ck-svgbox').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var n = e.target.closest ? e.target.closest('.ck-node') : null;
+    if (n) { e.preventDefault(); stopTour(); select(n.dataset.k); }
+  });
+  $('ck-chips').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.ck-chip') : null;
+    if (b) { stopTour(); select(b.dataset.k); }
+  });
+  document.querySelectorAll('.ck-tab').forEach(function (b) {
+    b.addEventListener('click', function () { stopTour(); renderTower(Number(b.dataset.t)); });
+  });
+
+  function stopTour() {
+    if (tourTimer) { clearInterval(tourTimer); tourTimer = null; }
+    var tb = $('ck-tour-btn'); tb.textContent = '▶ Tur otomatis'; tb.classList.remove('on'); tb.classList.add('ghost');
+  }
+  $('ck-tour-btn').addEventListener('click', function () {
+    if (tourTimer) { stopTour(); return; }
+    var tb = $('ck-tour-btn'); tb.textContent = '⏸ Hentikan tur'; tb.classList.add('on'); tb.classList.remove('ghost');
+    tourTimer = setInterval(function () {
+      var keys = TOWERS[cur].keys, i = keys.indexOf(curKey);
+      select(keys[(i + 1) % keys.length]);
+    }, 4500);
+  });
+
+  /* =========================================================
+     2. PERJALANAN DATA
+     ========================================================= */
+  var step = -1, jrTimer = null;
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('#jr-track .jr-node'));
+  var arrows = Array.prototype.slice.call(document.querySelectorAll('#jr-track .jr-arrow'));
+
+  function J() { return TOWERS[cur]; }
+  var STEPS = [
+    { t:'1 · Sensor merasakan', pk:function () { return '🌡️ ' + J().what; },
+      s:function () { return 'Pertama, sensor merasakan dunia di sekitarnya. Sama seperti pancaindra kita: ada yang merasa panas, ada yang melihat cahaya, ada yang meraba tanah. Kali ini sensor merasakan ' + J().what + '!'; } },
+    { t:'2 · ESP32 berpikir', pk:function () { return '🔢 ' + J().val; },
+      s:function () { return 'Sensor bicara dengan bahasa listrik, jadi ESP32 yang menerjemahkan. ESP32 adalah otak menara. Ia mengubah rasa tadi jadi angka (contohnya ' + J().val + ') dan menyiapkannya untuk dikirim. Kadang angkanya 0 sampai 4095, namanya ADC.'; } },
+    { t:'3 · Dikirim lewat Wi-Fi', pk:function () { return '📦 paket data'; },
+      s:function () { return 'Angka itu dikemas jadi paket kecil, lalu dikirim lewat Wi-Fi sekolah. Bayangkan kurir yang terbang di udara! Menara mengirim paket sekitar tiap 10 detik, jadi datanya selalu segar.'; } },
+    { t:'4 · Disimpan di awan', pk:function () { return '🗄️ laci ' + J().table; },
+      s:function () { return 'Paket tiba di Supabase, yaitu lemari arsip raksasa di internet (awan ☁️). ' + J().name + ' punya laci sendiri bernama “' + J().table + '”. Semua data disusun rapi menurut waktunya.'; } },
+    { t:'5 · Tampil di dashboard', pk:function () { return '📱 ' + J().val; },
+      s:function () { return 'Begitu ada data baru masuk, dashboard langsung diberi tahu. Namanya realtime. Angka di layarmu berubah tanpa perlu refresh! Dashboard juga menghitung rata-rata dan bisa Export CSV untuk tugas atau penelitian.'; } }
+  ];
+
+  function updateJourneyTexts() {
+    nodes.forEach(function (n, i) { n.querySelector('.jr-pk').textContent = STEPS[i].pk(); });
+    if (step >= 0) { $('jr-text').textContent = STEPS[step].s(); }
+  }
+
+  function goto(i) {
+    step = i;
+    nodes.forEach(function (n, k) { n.classList.toggle('on', k === i); n.classList.toggle('done', k < i); });
+    arrows.forEach(function (a, k) { a.classList.toggle('on', k === i - 1 || k === i); });
+    $('jr-title').textContent = 'Kak ESP bilang: ' + STEPS[i].t;
+    $('jr-text').textContent = STEPS[i].s();
+    var say = $('jr-say'); say.classList.remove('pop'); void say.offsetWidth; say.classList.add('pop');
+    $('jr-prog').style.width = ((i + 1) / STEPS.length * 100) + '%';
+    updateJourneyTexts();
+  }
+  function stopPlay() {
+    if (jrTimer) { clearInterval(jrTimer); jrTimer = null; }
+    $('jr-play').textContent = step >= STEPS.length - 1 ? '↻ Ulangi' : '▶ Kirim Data!';
+  }
+  $('jr-play').addEventListener('click', function () {
+    if (jrTimer) { stopPlay(); return; }
+    if (step >= STEPS.length - 1) step = -1;
+    goto(step + 1);
+    $('jr-play').textContent = '⏸ Jeda';
+    jrTimer = setInterval(function () {
+      if (step >= STEPS.length - 1) { stopPlay(); return; }
+      goto(step + 1);
+      if (step >= STEPS.length - 1) stopPlay();
+    }, 5200);
+  });
+  $('jr-next').addEventListener('click', function () {
+    if (jrTimer) { clearInterval(jrTimer); jrTimer = null; }
+    goto(step >= STEPS.length - 1 ? 0 : step + 1);
+    $('jr-play').textContent = step >= STEPS.length - 1 ? '↻ Ulangi' : '▶ Kirim Data!';
+  });
+  nodes.forEach(function (n) {
+    n.addEventListener('click', function () {
+      if (jrTimer) { clearInterval(jrTimer); jrTimer = null; }
+      goto(Number(n.dataset.s));
+      $('jr-play').textContent = step >= STEPS.length - 1 ? '↻ Ulangi' : '▶ Kirim Data!';
+    });
+  });
+
+  /* =========================================================
+     3. DETEKTIF LIVE / OFFLINE  (aturan 45 detik seperti di web)
+     ========================================================= */
+  var dtState = 'live', dtSec = 0, dtTimer = null, dtJit = null;
+  function jitter() {
+    var t = 31.2 + (Math.random() - .5) * 1.4, h = 62 + Math.round((Math.random() - .5) * 6), u = 6.4 + (Math.random() - .5) * 1.0;
+    $('dt-t').textContent = t.toFixed(1); $('dt-h').textContent = h; $('dt-u').textContent = u.toFixed(1);
+  }
+  function dtSet(state) {
+    dtState = state;
+    var pill = $('dt-pill'), btn = $('dt-btn');
+    $('dt-cards').style.opacity = state === 'off' ? '.55' : '1';
+    pill.className = 'dt-pill ' + (state === 'off' ? 'off' : 'live');
+    $('dt-pilltxt').textContent = state === 'off' ? 'AWS 1 OFFLINE' : 'AWS 1 LIVE';
+    if (state === 'live') {
+      btn.disabled = false; btn.textContent = '✂️ Putuskan Wi-Fi'; btn.className = 'ck-btn ghost';
+      $('dt-wait').textContent = 'Menara mengirim data terus-menerus, jadi angkanya hidup dan bergerak.';
+      $('dt-prog').style.width = '0';
+      if (!dtJit) dtJit = setInterval(jitter, 1500);
+    } else if (state === 'counting') {
+      btn.disabled = true; btn.textContent = '⏳ Menunggu kabar…';
+      if (dtJit) { clearInterval(dtJit); dtJit = null; }
+    } else {
+      btn.disabled = false; btn.textContent = '🔌 Sambungkan Wi-Fi'; btn.className = 'ck-btn';
+      $('dt-wait').textContent = 'Lebih dari 45 detik tanpa kabar. Dashboard memutuskan: menara OFFLINE, kartu jadi redup dan angkanya berhenti.';
+    }
+  }
+  $('dt-btn').addEventListener('click', function () {
+    if (dtState === 'live') {
+      dtSet('counting'); dtSec = 0;
+      dtTimer = setInterval(function () {
+        dtSec += 1;
+        $('dt-prog').style.width = Math.min(100, dtSec / 45 * 100) + '%';
+        $('dt-wait').textContent = 'Wi-Fi putus… sudah ' + dtSec + ' detik tidak ada data baru (batasnya 45 detik).';
+        if (dtSec > 45) { clearInterval(dtTimer); dtTimer = null; dtSet('off'); }
+      }, 100);
+    } else if (dtState === 'off') {
+      dtSet('live');
+    }
+  });
+  dtJit = setInterval(jitter, 1500);
+
+  /* =========================================================
+     4. COBA SENDIRI
+     ========================================================= */
+  // --- Hujan (rumus yang sama dengan kode dashboard) ---
+  var rainSt = $('sm-rain-st'), rainDrops = [];
+  for (var i = 0; i < 14; i++) {
+    var d = document.createElement('span');
+    d.className = 'd'; d.textContent = '💧'; d.style.left = (4 + i * 6.8) + '%'; d.style.animationDelay = (i * 0.12).toFixed(2) + 's';
+    rainSt.appendChild(d); rainDrops.push(d);
+  }
+  function simRain() {
+    var adc = Number($('sm-rain').value), pct = Math.max(0, Math.min(100, (4095 - adc) / 4095 * 100));
+    var shown = Math.round(pct / 100 * rainDrops.length);
+    rainDrops.forEach(function (d, i) { d.style.visibility = i < shown ? 'visible' : 'hidden'; });
+    var word = pct < 5 ? 'Langit cerah ☀️' : pct < 40 ? 'Gerimis 🌦️' : pct < 75 ? 'Hujan 🌧️' : 'Deras sekali! ⛈️';
+    rainSt.style.background = 'linear-gradient(#' + (pct < 5 ? '1e3a8a' : pct < 40 ? '1e293b' : '0f172a') + ',#0f1f3a)';
+    $('sm-rain-out').innerHTML = word + '<br>Hujan = (4095 − <b>' + adc + '</b>) ÷ 4095 × 100 = <b>' + pct.toFixed(0) + '%</b>. Makin basah, angka sensor makin kecil, persen hujan makin besar.';
+  }
+  $('sm-rain').addEventListener('input', simRain); simRain();
+
+  // --- Jarak (waktu gema × kecepatan suara ÷ 2) ---
+  function simDist() {
+    var cm = Number($('sm-dist').value), ms = cm * 2 / 34.3; // 343 m/s = 34300 cm/s
+    $('sm-wall').style.left = (22 + (cm - 5) / 195 * 62) + '%';
+    $('sm-dist-out').innerHTML = 'Suara berangkat, memantul, dan kembali dalam <b>' + ms.toFixed(1) + ' milidetik</b>.<br>Jarak = waktu gema × kecepatan suara ÷ 2 = <b>' + cm + ' cm</b>.';
+  }
+  $('sm-dist').addEventListener('input', simDist); simDist();
+
+  // --- Cahaya -> Relay -> Lampu (aturan contoh) ---
+  function simLamp() {
+    var v = Number($('sm-light').value), on = v < 30;
+    var st = $('sm-lamp-st'), bulb = $('sm-bulb');
+    st.style.background = 'linear-gradient(' + (v < 30 ? '#020617' : v < 60 ? '#1e3a5f' : '#38bdf8') + ',#0f1f3a)';
+    $('sm-sky').textContent = v < 30 ? '🌙' : '☀️';
+    bulb.style.filter = on ? 'drop-shadow(0 0 22px #fde047) brightness(1.2)' : 'grayscale(1) brightness(.45)';
+    $('sm-lamp-out').innerHTML = 'Kecerahan: <b>' + v + '%</b> → Relay: <b>' + (on ? 'ON ✅' : 'OFF ⛔') + '</b><br>' + (on ? 'Sudah gelap, ESP32 menyuruh relay menyalakan lampu.' : 'Masih terang, lampu tidak perlu menyala.');
+  }
+  $('sm-light').addEventListener('input', simLamp); simLamp();
+
+  // --- Tanah ---
+  function simSoil() {
+    var v = Number($('sm-soil').value);
+    var pl = $('sm-plant'), icon, msg;
+    if (v < 25)      { icon = '🥀'; msg = 'Tanahnya haus! Tanaman butuh disiram.'; }
+    else if (v < 60) { icon = '🌱'; msg = 'Cukup lembap. Tanaman baik-baik saja.'; }
+    else if (v < 85) { icon = '🌿'; msg = 'Segar dan subur!'; }
+    else             { icon = '🪴'; msg = 'Terlalu basah. Tidak perlu disiram dulu.'; }
+    pl.textContent = icon;
+    pl.style.transform = 'scale(' + (0.8 + v / 100 * 0.7).toFixed(2) + ')';
+    $('sm-soil-out').innerHTML = 'Kelembaban tanah: <b>' + v + '%</b><br>' + msg;
+  }
+  $('sm-soil').addEventListener('input', simSoil); simSoil();
+
+  /* ---- mulai ---- */
+  renderTower(1);
+  goto(0); step = -1;
+  nodes.forEach(function (n) { n.classList.remove('on'); });
+  arrows.forEach(function (a) { a.classList.remove('on'); });
+  $('jr-prog').style.width = '0';
+  $('jr-title').textContent = 'Kak ESP bilang:';
+  $('jr-text').textContent = 'Halo! Aku akan mengantar datamu keliling. Tekan tombol “Kirim Data!” untuk mulai.';
+  updateJourneyTexts();
+})();
+</script>
+<!-- ========== CARA KERJA MENARA — selesai ========== -->
+
 <!-- ========== MANFAAT & DAMPAK ========== -->
 <section id="manfaat-dampak" class="mt-8 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 text-slate-300 relative overflow-hidden">
   <div class="md-orb md-orb-a"></div>
@@ -1120,6 +1794,7 @@ html {
         <li><a href="#dashboard" class="text-slate-400 hover:text-cyan-300 transition">Dashboard</a></li>
         <li><a href="#Hasil-AWS" class="text-slate-400 hover:text-cyan-300 transition">Hasil AWS</a></li>
         <li><a href="#info-sensor" class="text-slate-400 hover:text-cyan-300 transition">Info Sensor</a></li>
+        <li><a href="#cara-kerja" class="text-slate-400 hover:text-cyan-300 transition">Cara Kerja</a></li>
         <li><a href="#manfaat-dampak" class="text-slate-400 hover:text-cyan-300 transition">Manfaat &amp; Dampak</a></li>
         <li><a href="#galeri" class="text-slate-400 hover:text-cyan-300 transition">Galeri</a></li>
         <li>
